@@ -1,0 +1,17 @@
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+}
+
+.category-card {
+  border: 1px solid #eee;
+  padding: 24px;
+  text-align: center;
+  background: #fff;
+  cursor: pointer;
+}
+
+.category-card:hover {
+  border-color: #0070f3;
+}

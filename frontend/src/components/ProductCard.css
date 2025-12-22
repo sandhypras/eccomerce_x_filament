@@ -1,0 +1,39 @@
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.product-card {
+  border: 1px solid #eee;
+  padding: 16px;
+  background: #fff;
+}
+
+.product-image {
+  height: 160px;
+  background: #ddd;
+  margin-bottom: 12px;
+}
+
+.price {
+  font-weight: bold;
+  margin: 8px 0;
+}
+
+.product-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.product-actions button {
+  padding: 8px 12px;
+  border: 1px solid #0070f3;
+  background: white;
+  cursor: pointer;
+}
+
+.product-actions .detail {
+  background: #0070f3;
+  color: white;
+}
