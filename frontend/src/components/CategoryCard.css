@@ -1,17 +1,36 @@
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 20px;
+.category-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.category-card {
-  border: 1px solid #eee;
-  padding: 24px;
-  text-align: center;
-  background: #fff;
-  cursor: pointer;
+.category-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.category-card p {
+  font-size: 13px;
+  color: #6b7280;
 }
 
 .category-card:hover {
-  border-color: #0070f3;
+  border-color: #facc15; /* kuning Filament */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.category-card.active {
+  border-color: #facc15;
+  background: #fefce8;
+}
+
+.category-link {
+  text-decoration: none;
+  color: inherit;
 }
