@@ -4,7 +4,7 @@ import About from "./pages/About";
 import ProductDetail from "./pages/ProductDetail";
 import CategoryPage from "./pages/CategoryPage";
 import Location from "./pages/Location";
-
+import Contact from "./pages/Contact";
 
 export default function App() {
     return (
@@ -13,8 +13,9 @@ export default function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
-                <Route path="/category/:category" element={<CategoryPage />} />;
+                <Route path="/category/:category" element={<CategoryPage />} />
                 <Route path="/location" element={<Location />} />
+                <Route path="/contact" element={<Contact />} />
             </Routes>
         </BrowserRouter>
     );
