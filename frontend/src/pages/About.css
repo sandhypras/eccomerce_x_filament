@@ -1,0 +1,99 @@
+/* ===============================
+   HERO / INTRO
+================================ */
+.about-hero {
+  padding: 80px 60px;
+  background: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.about-hero p {
+  max-width: 900px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #4b5563;
+}
+
+/* ===============================
+   SECTION
+================================ */
+.about-section {
+  background: #ffffff;
+  padding: 60px;
+}
+
+/* ===============================
+   IMAGE GRID
+================================ */
+.about-image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 30px;
+}
+
+.about-image-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 20px;
+  text-align: center;
+  background: #ffffff;
+}
+
+.about-image-card img {
+  max-height: 160px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+.about-image-card p {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ===============================
+   TEXT CARD
+================================ */
+.about-card {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.about-card h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.about-card p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #4b5563;
+  margin-bottom: 16px;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+  .about-hero {
+    padding: 60px 24px;
+  }
+
+  .about-section {
+    padding: 40px 24px;
+  }
+
+  .about-image-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-card {
+    padding: 24px;
+  }
+}

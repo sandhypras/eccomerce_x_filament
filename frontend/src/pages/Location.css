@@ -1,0 +1,84 @@
+/* ===============================
+   HERO
+================================ */
+.location-hero {
+  padding: 80px 60px;
+  background: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.location-hero h1 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.location-hero p {
+  max-width: 700px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+/* ===============================
+   SECTION
+================================ */
+.location-section {
+  background: #ffffff;
+  padding: 60px;
+}
+
+.location-card {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 40px;
+}
+
+/* ===============================
+   INFO
+================================ */
+.location-info h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.location-info p {
+  margin-bottom: 16px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* ===============================
+   MAP
+================================ */
+.location-map iframe {
+  width: 100%;
+  height: 300px;
+  border: none;
+  border-radius: 6px;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+  .location-hero {
+    padding: 60px 24px;
+  }
+
+  .location-section {
+    padding: 40px 24px;
+  }
+
+  .location-card {
+    grid-template-columns: 1fr;
+    padding: 24px;
+  }
+}
