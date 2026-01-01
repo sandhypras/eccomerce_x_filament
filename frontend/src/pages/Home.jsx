@@ -1,89 +1,151 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import CategoryCard from "../components/CategoryCard";
-import homeProducts from "../data/homeProducts";
 import ProductCard from "../components/ProductCard";
+import homeProducts from "../data/homeProduct";
+import promoData from "../data/promoData";
 import "./Home.css";
 
 export default function Home() {
+    const banners = [
+        "/images/1banner.jpeg",
+        "/images/2banner.jpeg",
+    ];
+
+    const [activeSlide, setActiveSlide] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setActiveSlide((prev) => (prev + 1) % banners.length);
+        }, 4000);
+        return () => clearInterval(interval);
+    }, []);
+
     const categories = [
-        "All",
-        "Laptop",
-        "Printer",
-        "Smartphone",
-        "CCTV",
-        "Networking",
-        "Accesoris",
+        { name: "Laptop", icon: "/icons/icon-laptop.png" },
+        { name: "Kulkas", icon: "/icons/icon-kulkas.png" },
+        { name: "Camera", icon: "/icons/icon-camera.png" },
+        { name: "Smartphone", icon: "/icons/icon-hp.png" },
+        { name: "Mouse", icon: "/icons/icon-mouse.png" },
     ];
 
     const [selectedCategory, setSelectedCategory] = useState("All");
-    const [search, setSearch] = useState("");
 
-    // FILTER PRODUK
-    const filteredProducts = homeProducts.filter((product) => {
-        const matchCategory =
-            selectedCategory === "All" || product.category === selectedCategory;
-
-        const matchSearch = product.name
-            .toLowerCase()
-            .includes(search.toLowerCase());
-
-        return matchCategory && matchSearch;
-    });
+    const filteredProducts =
+        selectedCategory === "All"
+            ? homeProducts
+            : homeProducts.filter((item) => item.category === selectedCategory);
 
     return (
         <>
             <Navbar />
 
-            {/* HERO */}
-            <section className="hero">
-                <h1>Solusi Elektronik & IT Terpercaya</h1>
-                <p>
-                    Menyediakan laptop, printer, dan perangkat teknologi terbaik
-                    untuk kebutuhan bisnis dan personal.
-                </p>
+            {/*  HERO SLIDER  */}
+            <section className="hero-slider">
+                {banners.map((img, index) => (
+                    <div
+                        key={index}
+                        className={`hero-slide ${
+                            index === activeSlide ? "active" : ""
+                        }`}
+                        style={{ backgroundImage: `url(${img})` }}
+                    />
+                ))}
             </section>
 
-            {/* SEARCH */}
+            {/*  CATEGORIES  */}
             <section className="section">
-                <input
-                    className="search-input"
-                    type="text"
-                    placeholder="Cari produk..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-            </section>
-
-            {/* CATEGORIES */}
-            <section className="section">
-                <h2 className="section-title">Categories</h2>
-
+                <h2 className="section-title center">Categories</h2>
                 <div className="category-grid">
                     {categories.map((cat) => (
-                        <CategoryCard
-                            key={cat}
-                            title={cat}
-                            active={selectedCategory === cat}
-                            onClick={() => setSelectedCategory(cat)}
-                        />
+                        <button
+                            key={cat.name}
+                            className={`category-card ${
+                                selectedCategory === cat.name ? "active" : ""
+                            }`}
+                            onClick={() => setSelectedCategory(cat.name)}
+                        >
+                            <img src={cat.icon} alt={cat.name} />
+                            <span>{cat.name}</span>
+                        </button>
                     ))}
                 </div>
             </section>
 
-            {/* PRODUCTS */}
+            {/*  PROMO SALE  */}
             <section className="section">
-                <h2 className="section-title">Produk {selectedCategory}</h2>
+                <h2 className="section-title center">Promo Sale</h2>
+                <div className="promo-grid">
+                    {promoData.map((promo) => (
+                        <Link
+                            to={`/promo/${promo.id}`}
+                            className="promo-card"
+                            key={promo.id}
+                        >
+                            <div className="promo-img">
+                                <img src={promo.image} alt={promo.title} />
+                            </div>
+                            <div className="promo-info">
+                                <h4>{promo.title}</h4>
+                                <p>{promo.description}</p>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </section>
+
+            {/*  PRODUCTS  */}
+            <section className="section">
+                <h2 className="section-title center">
+                    Products{" "}
+                    {selectedCategory !== "All" && `- ${selectedCategory}`}
+                </h2>
 
                 <div className="product-grid">
-                    {filteredProducts.length > 0 ? (
-                        filteredProducts.map((product) => (
-                            <ProductCard key={product.id} product={product} />
-                        ))
-                    ) : (
-                        <p>Tidak ada produk ditemukan.</p>
-                    )}
+                    {filteredProducts.map((product) => (
+                        <ProductCard key={product.id} product={product} />
+                    ))}
+                </div>
+            </section>
+
+            {/* REVIEWS  */}
+            <section className="section review-section">
+                <h2 className="section-title center">Customer Reviews</h2>
+
+                <div className="review-grid">
+                    <div className="review-card">
+                        <div className="review-user">
+                            <div className="avatar">A</div>
+                            <div>
+                                <strong>Andi Wijaya</strong>
+                                <small>Verified Buyer</small>
+                            </div>
+                        </div>
+                        <p>Produk original, pengiriman cepat dan aman.</p>
+                    </div>
+
+                    <div className="review-card">
+                        <div className="review-user">
+                            <div className="avatar">S</div>
+                            <div>
+                                <strong>Siti Rahma</strong>
+                                <small>Verified Buyer</small>
+                            </div>
+                        </div>
+                        <p>Pelayanan ramah dan produk sesuai.</p>
+                    </div>
+
+                    <div className="review-card">
+                        <div className="review-user">
+                            <div className="avatar">B</div>
+                            <div>
+                                <strong>Budi Santoso</strong>
+                                <small>Verified Buyer</small>
+                            </div>
+                        </div>
+                        <p>Harga oke, kualitas mantap.</p>
+                    </div>
                 </div>
             </section>
 

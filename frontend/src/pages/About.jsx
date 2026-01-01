@@ -1,60 +1,103 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import homeProducts from "../data/homeProducts";
 import "./About.css";
 
 export default function About() {
-    // Ambil 3 produk pertama untuk ditampilkan di About
-    const showcaseProducts = homeProducts.slice(0, 3);
-
     return (
         <>
             <Navbar />
 
-            {/* INTRO */}
-            <section className="about-hero">
-                <p>
-                    A6 Electric merupakan penyedia perangkat elektronik dan
-                    solusi IT yang fokus pada produk berkualitas untuk kebutuhan
-                    personal, bisnis, dan instansi. Kami menghadirkan berbagai
-                    produk pilihan yang telah disesuaikan dengan kebutuhan
-                    teknologi masa kini.
-                </p>
-            </section>
+            <div className="page-wrapper">
+                <section className="page-hero">
+                    <h1>About A6 Electric</h1>
+                    <p>
+                        Solusi Elektronik & Teknologi Terpercaya untuk Bisnis dan
+                        Personal
+                    </p>
+                </section>
 
-            {/* IMAGE SHOWCASE */}
-            <section className="about-section">
-                <h2 className="section-title">Produk Unggulan Kami</h2>
-
-                <div className="about-image-grid">
-                    {showcaseProducts.map((product) => (
-                        <div key={product.id} className="about-image-card">
-                            <img src={product.image} alt={product.name} />
-                            <p>{product.name}</p>
+                <section className="page-content">
+                    <div className="grid-3">
+                        <div className="info-card">
+                            <h3>Profil</h3>
+                            <p>
+                                A6 Electric adalah penyedia produk elektronik dan IT
+                                yang berfokus pada kualitas produk dan layanan
+                                profesional.
+                            </p>
                         </div>
-                    ))}
-                </div>
-            </section>
 
-            {/* DESCRIPTION */}
-            <section className="about-section">
-                <div className="about-card">
-                    <h2>Tentang A6 Electric</h2>
-                    <p>
-                        Kami menyediakan berbagai produk elektronik seperti
-                        laptop, printer, perangkat jaringan, CCTV, dan aksesoris
-                        pendukung lainnya. Setiap produk dipilih dengan standar
-                        kualitas tinggi untuk memastikan performa dan keandalan
-                        jangka panjang.
-                    </p>
+                        <div className="info-card">
+                            <h3>Visi</h3>
+                            <p>
+                                Menjadi toko elektronik terpercaya dengan solusi
+                                teknologi modern dan inovatif.
+                            </p>
+                        </div>
 
-                    <p>
-                        Dengan pengalaman dan komitmen yang kuat, A6 Electric
-                        terus berupaya menjadi mitra teknologi terpercaya yang
-                        mampu mendukung produktivitas dan efisiensi pelanggan.
+                        <div className="info-card">
+                            <h3>Misi</h3>
+                            <ul>
+                                <li>Produk original & bergaransi resmi</li>
+                                <li>Harga kompetitif & transparan</li>
+                                <li>Dukungan teknis profesional</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="page-content">
+                    <div className="grid-3">
+                        <div className="info-card">
+                            <h3>💻 Produk Berkualitas</h3>
+                            <p>
+                                Laptop, CCTV, smartphone, printer, dan aksesoris IT
+                                dari brand terpercaya.
+                            </p>
+                        </div>
+
+                        <div className="info-card">
+                            <h3>⚙️ Layanan Profesional</h3>
+                            <p>
+                                Instalasi, konsultasi, dan after-sales service oleh
+                                tim berpengalaman.
+                            </p>
+                        </div>
+
+                        <div className="info-card">
+                            <h3>🚚 Pengiriman Cepat</h3>
+                            <p>
+                                Pengiriman aman dan cepat ke berbagai wilayah
+                                Indonesia.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="page-content">
+                    <div className="grid-3 stats">
+                        <div className="stat-card">
+                            <h2>500+</h2>
+                            <p>Produk Elektronik</p>
+                        </div>
+                        <div className="stat-card">
+                            <h2>1.000+</h2>
+                            <p>Pelanggan Puas</p>
+                        </div>
+                        <div className="stat-card">
+                            <h2>5 Tahun+</h2>
+                            <p>Pengalaman</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="page-content center">
+                    <h2>Siap Menjadi Partner Teknologi Anda?</h2>
+                    <p style={{ marginTop: "10px" }}>
+                        Hubungi kami atau kunjungi toko A6 Electric sekarang.
                     </p>
-                </div>
-            </section>
+                </section>
+            </div>
 
             <Footer />
         </>

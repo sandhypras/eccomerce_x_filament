@@ -6,6 +6,11 @@
   text-align: center;
 }
 
+.detail-hero h1 {
+  font-size: 32px;
+  margin-bottom: 6px;
+}
+
 /* WRAPPER */
 .detail-wrapper {
   padding: 60px 20px;
@@ -16,8 +21,8 @@
   margin: auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  align-items: stretch; /* 🔥 INI KUNCI SIMETRIS */
+  gap: 50px;
+  align-items: center;
 }
 
 /* IMAGE */
@@ -25,24 +30,21 @@
   background: white;
   border-radius: 20px;
   padding: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
   position: relative;
-  min-height: 420px; /* 🔥 TINGGI FIX */
 }
 
 .detail-image img {
-  max-height: 320px;
-  width: auto;
+  max-height: 300px;
+  width: 100%;
   object-fit: contain;
 }
 
 /* BADGE */
 .badge-popular {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: 15px;
+  left: 15px;
   background: #2563eb;
   color: white;
   padding: 6px 14px;
@@ -51,10 +53,9 @@
 }
 
 /* INFO */
-.detail-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+.detail-info h2 {
+  font-size: 26px;
+  margin-bottom: 10px;
 }
 
 .detail-price {
@@ -63,34 +64,42 @@
   color: #2563eb;
 }
 
+.detail-rating {
+  margin: 10px 0 20px;
+}
+
 /* BOX */
 .detail-box {
   background: #f8fafc;
   padding: 20px;
   border-radius: 14px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.detail-box h4 {
+  margin-bottom: 10px;
 }
 
 /* TABLE */
 .spec-table {
   width: 100%;
+  border-collapse: collapse;
 }
 
 .spec-table td {
-  padding: 6px 0;
+  padding: 8px 0;
   font-size: 14px;
 }
 
 .spec-table td:first-child {
   color: gray;
-  width: 40%;
+  width: 35%;
 }
 
 /* BUTTON */
 .detail-actions {
   display: flex;
-  gap: 14px;
-  margin-top: 10px;
+  gap: 15px;
 }
 
 .btn-cart {
@@ -100,6 +109,7 @@
   border: none;
   padding: 14px;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 .btn-buy {
@@ -108,6 +118,7 @@
   border: none;
   padding: 14px 24px;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 /* RELATED */
@@ -141,11 +152,11 @@
 }
 
 .related-img {
-  height: 160px; /* 🔥 WAJIB ADA */
+  height: 160px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 12px;
+  margin-bottom: 15px;
 }
 
 .related-img img {
@@ -154,14 +165,15 @@
   object-fit: contain;
 }
 
+.related-card h4 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .detail-container {
     grid-template-columns: 1fr;
-  }
-
-  .detail-image {
-    min-height: auto;
   }
 
   .detail-actions {
