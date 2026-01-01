@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import homeProducts from "../data/homeProduct";
@@ -6,7 +6,11 @@ import "./ProductDetail.css";
 
 export default function ProductDetail() {
   const { id } = useParams();
-  const product = homeProducts.find((item) => item.id === parseInt(id));
+  const navigate = useNavigate();
+
+  const product = homeProducts.find(
+    (item) => item.id === parseInt(id)
+  );
 
   if (!product) {
     return (
@@ -21,13 +25,57 @@ export default function ProductDetail() {
     );
   }
 
+  /* =========================
+     TAMBAHAN LOGIC DI SINI
+     ========================= */
+
   const handleAddToCart = () => {
-    alert(`${product.name} masuk ke keranjang`);
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const existing = cart.find((item) => item.id === product.id);
+
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        qty: 1,
+      });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert(`${product.name} berhasil ditambahkan ke keranjang`);
   };
 
   const handleBuyNow = () => {
-    alert(`Checkout ${product.name}`);
+    // pastikan produk masuk cart
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const exists = cart.find((item) => item.id === product.id);
+
+    if (!exists) {
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        qty: 1,
+      });
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
+    const isLogin = localStorage.getItem("isLogin");
+
+    if (!isLogin) {
+      navigate("/login");
+    } else {
+      navigate("/checkout");
+    }
   };
+
+  /* ========================= */
 
   return (
     <>
@@ -89,10 +137,12 @@ export default function ProductDetail() {
               </table>
             </div>
 
+            {/* ACTION BUTTON */}
             <div className="detail-actions">
               <button className="btn-cart" onClick={handleAddToCart}>
                 Tambah ke Keranjang
               </button>
+
               <button className="btn-buy" onClick={handleBuyNow}>
                 Beli Sekarang
               </button>
