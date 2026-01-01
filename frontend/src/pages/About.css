@@ -1,99 +1,100 @@
-/* ===============================
-   HERO / INTRO
-================================ */
-.about-hero {
-  padding: 80px 60px;
-  background: #f3f4f6;
-  border-bottom: 1px solid #e5e7eb;
+
+.page-wrapper {
+    max-width: 1200px;
+    margin: 60px auto;
+    padding: 60px 40px;
+    background: #ffffff;
+    border-radius: 28px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.1);
 }
 
-.about-hero p {
-  max-width: 900px;
-  font-size: 16px;
-  line-height: 1.7;
-  color: #4b5563;
+.page-hero {
+    text-align: center;
+    margin-bottom: 60px;
 }
 
-/* ===============================
-   SECTION
-================================ */
-.about-section {
-  background: #ffffff;
-  padding: 60px;
+.page-hero h1 {
+    font-size: 38px;
+    color: #0f172a;
 }
 
-/* ===============================
-   IMAGE GRID
-================================ */
-.about-image-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-top: 30px;
+.page-hero p {
+    margin-top: 12px;
+    font-size: 16px;
+    color: #475569;
+    max-width: 700px;
+    margin-inline: auto;
 }
 
-.about-image-card {
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 20px;
-  text-align: center;
-  background: #ffffff;
+
+.page-content {
+    margin-bottom: 60px;
 }
 
-.about-image-card img {
-  max-height: 160px;
-  object-fit: contain;
-  margin-bottom: 12px;
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
 }
 
-.about-image-card p {
-  font-size: 14px;
-  font-weight: 600;
-  color: #111827;
+
+.info-card {
+    background: #f8fafc;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease;
 }
 
-/* ===============================
-   TEXT CARD
-================================ */
-.about-card {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 40px;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
+.info-card:hover {
+    transform: translateY(-6px);
 }
 
-.about-card h2 {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #111827;
+.info-card h3 {
+    margin-bottom: 12px;
+    color: #2563eb;
+    text-align: center;
 }
 
-.about-card p {
-  font-size: 15px;
-  line-height: 1.7;
-  color: #4b5563;
-  margin-bottom: 16px;
+.info-card p,
+.info-card li {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.7;
 }
 
-/* ===============================
-   RESPONSIVE
-================================ */
+.stats .stat-card {
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    color: white;
+    text-align: center;
+    padding: 35px 20px;
+    border-radius: 20px;
+}
+
+.stat-card h2 {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.stat-card p {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+
+.center {
+    text-align: center;
+}
+
+
 @media (max-width: 768px) {
-  .about-hero {
-    padding: 60px 24px;
-  }
+    .page-wrapper {
+        padding: 40px 20px;
+        margin: 40px 15px;
+    }
 
-  .about-section {
-    padding: 40px 24px;
-  }
-
-  .about-image-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .about-card {
-    padding: 24px;
-  }
+    .page-hero h1 {
+        font-size: 28px;
+    }
 }

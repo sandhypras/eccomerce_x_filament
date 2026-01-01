@@ -3,19 +3,34 @@ import "./ProductCard.css";
 
 export default function ProductCard({ product }) {
     return (
-        <Link to={`/product/${product.id}`} className="product-link">
-            <div className="product-card">
-                <div className="product-image">
-                    <img src={product.image} alt={product.name} />
-                </div>
+        <div className="product-card">
+            {/* BADGE POPULAR */}
+            {product.popular && <span className="badge-popular">Popular</span>}
 
-                <div className="product-body">
-                    <h4>{product.name}</h4>
-                    <p className="price">{product.price}</p>
+            {/* GAMBAR */}
+            <img
+                src={product.image}
+                alt={product.name}
+                className="product-image"
+            />
 
-                    <button className="btn-primary">Add to cart</button>
-                </div>
+            {/* NAMA */}
+            <h3 className="product-name">{product.name}</h3>
+
+            {/* RATING */}
+            <div className="product-rating">⭐ {product.rating}</div>
+
+            {/* HARGA */}
+            <p className="price">Rp {product.price.toLocaleString("id-ID")}</p>
+
+            {/* ACTION */}
+            <div className="actions">
+                <button className="btn-cart">Add to Cart</button>
+
+                <Link to={`/product/${product.id}`} className="btn-detail">
+                    View Detail
+                </Link>
             </div>
-        </Link>
+        </div>
     );
 }

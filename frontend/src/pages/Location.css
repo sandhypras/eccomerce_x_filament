@@ -1,84 +1,116 @@
-/* ===============================
-   HERO
-================================ */
-.location-hero {
-  padding: 80px 60px;
-  background: #f3f4f6;
-  border-bottom: 1px solid #e5e7eb;
+/* ===== LOCATION PAGE ===== */
+
+.location {
+    padding: 70px 40px;
+    max-width: 1100px;
+    margin: auto;
 }
 
-.location-hero h1 {
-  font-size: 36px;
-  font-weight: 700;
-  color: #111827;
-  margin-bottom: 12px;
+/* TITLE */
+.location h1 {
+    font-size: 34px;
+    margin-bottom: 12px;
+    color: #0f172a;
+    text-align: center;
 }
 
-.location-hero p {
-  max-width: 700px;
-  color: #4b5563;
-  line-height: 1.6;
+/* DESC */
+.location-desc {
+    margin-bottom: 45px;
+    color: #475569;
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.6;
 }
 
-/* ===============================
-   SECTION
-================================ */
-.location-section {
-  background: #ffffff;
-  padding: 60px;
+/* GRID */
+.location-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 32px;
+    align-items: stretch;
 }
 
-.location-card {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 40px;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 40px;
+/* INFO CARD */
+.location-info {
+    background: #ffffff;
+    padding: 28px;
+    border-radius: 14px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* ===============================
-   INFO
-================================ */
-.location-info h2 {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #111827;
+.location-info:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
 }
 
+/* CARD TITLE */
+.location-info h3 {
+    margin-top: 18px;
+    margin-bottom: 8px;
+    color: #2563eb;
+    font-size: 18px;
+}
+
+/* CARD TEXT */
 .location-info p {
-  margin-bottom: 16px;
-  line-height: 1.6;
-  color: #374151;
+    color: #334155;
+    font-size: 15px;
+    line-height: 1.6;
 }
 
-/* ===============================
-   MAP
-================================ */
+/* MAP */
+.location-map {
+    width: 100%;
+    height: 100%;
+}
+
 .location-map iframe {
-  width: 100%;
-  height: 300px;
-  border: none;
-  border-radius: 6px;
+    width: 100%;
+    height: 100%;
+    min-height: 340px;
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
 }
 
-/* ===============================
-   RESPONSIVE
-================================ */
+/* CTA SECTION (OPTIONAL) */
+.location-cta {
+    margin-top: 60px;
+    text-align: center;
+}
+
+.location-cta h2 {
+    font-size: 26px;
+    color: #0f172a;
+    margin-bottom: 10px;
+}
+
+.location-cta p {
+    color: #475569;
+    font-size: 15px;
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .location-hero {
-    padding: 60px 24px;
-  }
+    .location {
+        padding: 50px 20px;
+    }
 
-  .location-section {
-    padding: 40px 24px;
-  }
+    .location h1 {
+        font-size: 28px;
+    }
 
-  .location-card {
-    grid-template-columns: 1fr;
-    padding: 24px;
-  }
+    .location-desc {
+        font-size: 15px;
+    }
+
+    .location-info {
+        padding: 22px;
+    }
+
+    .location-map iframe {
+        min-height: 260px;
+    }
 }

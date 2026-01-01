@@ -1,36 +1,45 @@
-.category-card {
-  background: #ffffff;
+.product-card {
   border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  background: white;
+  transition: transform 0.2s;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+}
+
+.product-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.price {
+  color: #2563eb;
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-cart {
+  flex: 1;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px;
   border-radius: 6px;
-  padding: 24px 16px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.category-card h3 {
-  font-size: 15px;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 6px;
-}
-
-.category-card p {
-  font-size: 13px;
-  color: #6b7280;
-}
-
-.category-card:hover {
-  border-color: #facc15; /* kuning Filament */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-}
-
-.category-card.active {
-  border-color: #facc15;
-  background: #fefce8;
-}
-
-.category-link {
-  text-decoration: none;
-  color: inherit;
+.btn-detail {
+  flex: 1;
+  background: #e5e7eb;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
 }
