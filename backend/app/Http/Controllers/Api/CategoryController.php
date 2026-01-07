@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -9,12 +8,20 @@ class CategoryController extends Controller
 {
     public function index()
     {
+        $categories = Category::latest()->get()->map(function ($cat) {
+            return [
+                'id' => $cat->id,
+                'name' => $cat->name,
+                'image' => $cat->image
+                    ? asset('storage/' . $cat->image)
+                    : null,
+            ];
+        });
+
         return response()->json([
             'success' => true,
             'message' => 'List categories',
-            'data' => Category::select('id', 'name', 'image')
-                ->latest()
-                ->get(),
-        ], 200);
+            'data' => $categories,
+        ]);
     }
 }

@@ -8,8 +8,6 @@ export default function UploadPayment() {
   const submit = async (e) => {
     e.preventDefault();
 
-    if (!file || !orderId) return alert("Lengkapi data");
-
     const formData = new FormData();
     formData.append("payment_proof", file);
 
@@ -17,12 +15,12 @@ export default function UploadPayment() {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-    alert("Bukti pembayaran berhasil dikirim");
+    alert("Bukti pembayaran berhasil diupload");
   };
 
   return (
     <div className="p-5">
-      <h1 className="text-xl font-bold mb-3">Upload Bukti Pembayaran</h1>
+      <h2 className="text-xl font-bold mb-4">Upload Bukti Pembayaran</h2>
 
       <form onSubmit={submit} className="space-y-3">
         <input type="text" placeholder="Order ID" className="border p-2 w-full" value={orderId} onChange={(e) => setOrderId(e.target.value)} />
