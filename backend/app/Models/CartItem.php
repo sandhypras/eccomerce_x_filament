@@ -16,11 +16,13 @@ class CartItem extends Model
         'price'
     ];
 
+    // Relasi ke Cart
     public function cart()
     {
         return $this->belongsTo(Cart::class);
     }
 
+    // Relasi ke Product
     public function product()
     {
         return $this->belongsTo(Product::class);

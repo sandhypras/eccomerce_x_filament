@@ -1,24 +1,171 @@
+// src/pages/Register.jsx
 import { useState } from "react";
-import api from "../api/axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-export default function Register() {
-  const [form, setForm] = useState({});
+const Register = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { register } = useAuth();
   const navigate = useNavigate();
 
-  const submit = async (e) => {
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    await api.post("/register", form);
-    alert("Registrasi berhasil, silakan login");
-    navigate("/login");
+    setError("");
+
+    if (formData.password !== formData.password_confirmation) {
+      setError("Password tidak cocok");
+      return;
+    }
+
+    setLoading(true);
+
+    const result = await register(formData.name, formData.email, formData.password, formData.password_confirmation);
+
+    if (result.success) {
+      navigate("/");
+    } else {
+      setError(result.message);
+    }
+
+    setLoading(false);
   };
 
   return (
-    <form onSubmit={submit}>
-      <input placeholder="Nama" onChange={(e) => setForm({ ...form, name: e.target.value })} />
-      <input placeholder="Email" onChange={(e) => setForm({ ...form, email: e.target.value })} />
-      <input type="password" placeholder="Password" onChange={(e) => setForm({ ...form, password: e.target.value })} />
-      <button>Register</button>
-    </form>
+    <div style={styles.container}>
+      <div style={styles.card}>
+        <h2 style={styles.title}>Register</h2>
+
+        {error && <div style={styles.errorMessage}>{error}</div>}
+
+        <form onSubmit={handleSubmit} style={styles.form}>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Nama</label>
+            <input type="text" name="name" value={formData.name} onChange={handleChange} style={styles.input} required />
+          </div>
+
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Email</label>
+            <input type="email" name="email" value={formData.email} onChange={handleChange} style={styles.input} required />
+          </div>
+
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Password</label>
+            <input type="password" name="password" value={formData.password} onChange={handleChange} style={styles.input} required minLength={8} />
+          </div>
+
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Konfirmasi Password</label>
+            <input type="password" name="password_confirmation" value={formData.password_confirmation} onChange={handleChange} style={styles.input} required minLength={8} />
+          </div>
+
+          <button type="submit" style={styles.button} disabled={loading}>
+            {loading ? "Loading..." : "Register"}
+          </button>
+        </form>
+
+        <p style={styles.linkText}>
+          Sudah punya akun?{" "}
+          <Link to="/login" style={styles.link}>
+            Login
+          </Link>
+        </p>
+      </div>
+    </div>
   );
-}
+};
+
+const styles = {
+  container: {
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f5f5f5",
+    padding: "20px",
+  },
+  card: {
+    backgroundColor: "white",
+    padding: "40px",
+    borderRadius: "8px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+    width: "100%",
+    maxWidth: "400px",
+  },
+  title: {
+    fontSize: "28px",
+    fontWeight: "bold",
+    marginBottom: "30px",
+    textAlign: "center",
+    color: "#333",
+  },
+  errorMessage: {
+    backgroundColor: "#fee",
+    color: "#c33",
+    padding: "12px",
+    borderRadius: "4px",
+    marginBottom: "20px",
+    fontSize: "14px",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
+  },
+  formGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+  label: {
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "#333",
+  },
+  input: {
+    padding: "12px",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+    fontSize: "14px",
+    outline: "none",
+    transition: "border-color 0.3s",
+  },
+  button: {
+    backgroundColor: "#2c3e50",
+    color: "white",
+    padding: "12px",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    fontWeight: "500",
+    cursor: "pointer",
+    transition: "background-color 0.3s",
+    marginTop: "10px",
+  },
+  linkText: {
+    marginTop: "20px",
+    textAlign: "center",
+    fontSize: "14px",
+    color: "#666",
+  },
+  link: {
+    color: "#2c3e50",
+    fontWeight: "500",
+    textDecoration: "none",
+  },
+};
+
+export default Register;

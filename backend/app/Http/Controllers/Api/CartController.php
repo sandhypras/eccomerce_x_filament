@@ -3,109 +3,177 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
-    /* ===================== ADD TO CART ===================== */
+    public function index()
+    {
+        try {
+            $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+
+            $cartItems = CartItem::with('product.category')
+                ->where('cart_id', $cart->id)
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'cart_id' => $cart->id,
+                'items' => $cartItems
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Cart index error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error fetching cart',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function add(Request $request)
     {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'qty' => 'required|integer|min:1',
-        ]);
-
-        $user = $request->user();
-
-        // 1️⃣ ambil atau buat cart
-        $cart = Cart::firstOrCreate([
-            'user_id' => $user->id
-        ]);
-
-        // 2️⃣ cek apakah item sudah ada
-        $item = CartItem::where('cart_id', $cart->id)
-            ->where('product_id', $request->product_id)
-            ->first();
-
-        if ($item) {
-            // update qty
-            $item->update([
-                'qty' => $item->qty + $request->qty,
+        try {
+            Log::info('Add to cart - START', [
+                'user_id' => Auth::id(),
+                'request_data' => $request->all()
             ]);
-        } else {
-            // ambil harga produk
-            $product = Product::findOrFail($request->product_id);
 
-            CartItem::create([
-                'cart_id' => $cart->id,
-                'product_id' => $product->id,
-                'qty' => $request->qty,
-                'price' => $product->price,
+            $validated = $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'quantity' => 'required|integer|min:1'
             ]);
+
+            $product = Product::findOrFail($validated['product_id']);
+
+            if ($product->stock < $validated['quantity']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Stok tidak mencukupi'
+                ], 400);
+            }
+
+            DB::beginTransaction();
+
+            $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+            Log::info('Cart found/created', ['cart_id' => $cart->id]);
+
+            $existingItem = CartItem::where('cart_id', $cart->id)
+                ->where('product_id', $validated['product_id'])
+                ->first();
+
+            if ($existingItem) {
+                $newQty = $existingItem->qty + $validated['quantity'];
+
+                if ($product->stock < $newQty) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Stok tidak mencukupi'
+                    ], 400);
+                }
+
+                $existingItem->qty = $newQty;
+                $existingItem->save();
+
+                Log::info('Cart item updated', ['item_id' => $existingItem->id]);
+                DB::commit();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Jumlah produk diperbarui',
+                    'cart_item' => $existingItem->load('product')
+                ], 200);
+            } else {
+                $cartItem = CartItem::create([
+                    'cart_id' => $cart->id,
+                    'product_id' => $validated['product_id'],
+                    'qty' => $validated['quantity'],
+                    'price' => $product->price
+                ]);
+
+                Log::info('Cart item created', ['item_id' => $cartItem->id]);
+                DB::commit();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Produk berhasil ditambahkan',
+                    'cart_item' => $cartItem->load('product')
+                ], 201);
+            }
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Add to cart ERROR', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error adding to cart',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'message' => 'Produk berhasil ditambahkan ke cart'
-        ]);
-    }
-    /* ===================== VIEW CART ===================== */
-    public function index(Request $request)
-{
-    $cart = Cart::with('items.product')
-        ->where('user_id', $request->user()->id)
-        ->first();
-
-    if (!$cart) {
-        return response()->json([
-            'items' => [],
-            'total' => 0,
-        ]);
     }
 
-    $total = $cart->items->sum(fn ($item) => $item->qty * $item->price);
-
-    return response()->json([
-        'items' => $cart->items,
-        'total' => $total,
-    ]);
-}
-    /* ===================== UPDATE CART ITEM ===================== */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'qty' => 'required|integer|min:1',
-        ]);
+        try {
+            $validated = $request->validate([
+                'quantity' => 'required|integer|min:1'
+            ]);
 
-        $user = $request->user();
+            $cart = Cart::where('user_id', Auth::id())->firstOrFail();
+            $cartItem = CartItem::where('cart_id', $cart->id)->where('id', $id)->firstOrFail();
 
-        $cart = Cart::where('user_id', $user->id)->firstOrFail();
+            $cartItem->qty = $validated['quantity'];
+            $cartItem->save();
 
-        $item = CartItem::where('cart_id', $cart->id)
-            ->where('id', $id)
-            ->firstOrFail();
-
-        $item->update([
-            'qty' => $request->qty,
-        ]);
-
-        return response()->json([
-            'message' => 'Cart item berhasil diperbarui'
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Keranjang diperbarui',
+                'cart_item' => $cartItem->load('product')
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Update cart error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating cart',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-    /* ===================== DELETE CART ITEM ===================== */
-    public function destroy(Request $request, $id)
-{
-    $item = CartItem::whereHas('cart', function ($q) use ($request) {
-        $q->where('user_id', $request->user()->id);
-    })->findOrFail($id);
 
-    $item->delete();
+    public function destroy($id)
+    {
+        try {
+            $cart = Cart::where('user_id', Auth::id())->firstOrFail();
+            $cartItem = CartItem::where('cart_id', $cart->id)->where('id', $id)->firstOrFail();
+            $cartItem->delete();
 
-    return response()->json([
-        'message' => 'Item berhasil dihapus dari cart',
-    ]);
-}
+            return response()->json([
+                'success' => true,
+                'message' => 'Item dihapus'
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Delete cart error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error removing item',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
