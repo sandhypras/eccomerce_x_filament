@@ -1,5 +1,5 @@
 // src/context/AuthContext.jsx
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import axiosInstance from "../api/axios";
 
 const AuthContext = createContext(null);
@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check if user is logged in on mount
+  // Check authentication on mount
   useEffect(() => {
     checkAuth();
   }, []);
@@ -16,22 +16,24 @@ export const AuthProvider = ({ children }) => {
   const checkAuth = async () => {
     const token = localStorage.getItem("token");
 
+    console.log("🔍 Checking auth...");
+    console.log("Token exists:", !!token);
+
     if (!token) {
+      console.log("❌ No token found");
       setLoading(false);
       return;
     }
 
     try {
-      // Set token to axios header
-      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
+      console.log("📡 Fetching user data...");
       const response = await axiosInstance.get("/me");
-      setUser(response.data.user || response.data);
+      console.log("✅ User data received:", response.data);
+      setUser(response.data);
     } catch (error) {
-      console.error("Auth check failed:", error);
+      console.error("❌ Auth check failed:", error);
       // Token invalid, clear it
       localStorage.removeItem("token");
-      delete axiosInstance.defaults.headers.common["Authorization"];
       setUser(null);
     } finally {
       setLoading(false);
@@ -40,23 +42,39 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
+      console.log("🔐 Attempting login...");
       const response = await axiosInstance.post("/login", { email, password });
+
+      console.log("Login response:", response.data);
+
       const { token, user: userData } = response.data;
 
-      // Save token
-      localStorage.setItem("token", token);
-
-      // Set token to axios header
-      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-      setUser(userData);
-      return { success: true };
+      if (token) {
+        localStorage.setItem("token", token);
+        setUser(userData);
+        console.log("✅ Login successful, token saved");
+        return { success: true, user: userData }; // ← Return user data
+      } else {
+        console.error("❌ No token in response");
+        return { success: false, message: "Invalid response from server" };
+      }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("❌ Login error:", error);
       return {
         success: false,
-        message: error.response?.data?.message || "Login gagal",
+        message: error.response?.data?.message || "Login failed",
       };
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await axiosInstance.post("/logout");
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      localStorage.removeItem("token");
+      setUser(null);
     }
   };
 
@@ -71,44 +89,66 @@ export const AuthProvider = ({ children }) => {
 
       const { token, user: userData } = response.data;
 
-      // Save token
-      localStorage.setItem("token", token);
+      if (token) {
+        localStorage.setItem("token", token);
+        setUser(userData);
+        return { success: true };
+      }
 
-      // Set token to axios header
-      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-      setUser(userData);
-      return { success: true };
+      return { success: false, message: "Registration failed" };
     } catch (error) {
-      console.error("Register error:", error);
       return {
         success: false,
-        message: error.response?.data?.message || "Registrasi gagal",
+        message: error.response?.data?.message || "Registration failed",
+        errors: error.response?.data?.errors,
       };
-    }
-  };
-
-  const logout = async () => {
-    try {
-      await axiosInstance.post("/logout");
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
-      // Clear token and user
-      localStorage.removeItem("token");
-      delete axiosInstance.defaults.headers.common["Authorization"];
-      setUser(null);
     }
   };
 
   const value = {
     user,
-    login,
-    register,
-    logout,
     loading,
     isAuthenticated: !!user,
+    login,
+    logout,
+    register,
+    checkAuth,
   };
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#f5f5f5",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              border: "4px solid #f3f3f3",
+              borderTop: "4px solid #2c3e50",
+              borderRadius: "50%",
+              width: "50px",
+              height: "50px",
+              margin: "0 auto 20px",
+              animation: "spin 1s linear infinite",
+            }}
+          />
+          <p>Loading...</p>
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      </div>
+    );
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -1,9 +1,9 @@
-// src/pages/Products.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingCart, Eye, Filter } from "lucide-react";
+import { ShoppingCart, Eye, Filter, Search, TrendingUp, Package, Star } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../api/axios";
+import Footer from "../components/Footer";
 
 const Products = () => {
   const navigate = useNavigate();
@@ -13,13 +13,14 @@ const Products = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [addingToCart, setAddingToCart] = useState(null); // Track which product is being added
+  const [addingToCart, setAddingToCart] = useState(null);
 
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sortBy, setSortBy] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Fetch products and categories
   useEffect(() => {
@@ -29,20 +30,14 @@ const Products = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-
-      // Test connection first
       console.log("🔍 Testing API connection...");
 
-      const [productsRes, categoriesRes] = await Promise.all([
-        axiosInstance.get("/products", { timeout: 30000 }), // 30 detik
-        axiosInstance.get("/categories", { timeout: 30000 }),
-      ]);
+      const [productsRes, categoriesRes] = await Promise.all([axiosInstance.get("/products", { timeout: 30000 }), axiosInstance.get("/categories", { timeout: 30000 })]);
 
       console.log("✅ Products response:", productsRes.data);
       console.log("✅ Categories response:", categoriesRes.data);
 
       let productsData = Array.isArray(productsRes.data) ? productsRes.data : productsRes.data.data || [];
-
       let categoriesData = Array.isArray(categoriesRes.data) ? categoriesRes.data : categoriesRes.data.data || [];
 
       setProducts(productsData);
@@ -59,6 +54,10 @@ const Products = () => {
   // Filter and sort products
   const getFilteredProducts = () => {
     let filtered = [...products];
+
+    if (searchQuery) {
+      filtered = filtered.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
 
     if (selectedCategory) {
       filtered = filtered.filter((p) => p.category_id === parseInt(selectedCategory));
@@ -87,7 +86,6 @@ const Products = () => {
   const handleAddToCart = async (productId, e) => {
     e.stopPropagation();
 
-    // Debug: Log authentication status
     console.log("🔍 Debug Add to Cart:");
     console.log("- isAuthenticated:", isAuthenticated);
     console.log("- user:", user);
@@ -115,9 +113,7 @@ const Products = () => {
       console.error("❌ Error adding to cart:", error);
       console.error("Error response:", error.response?.data);
       console.error("Error status:", error.response?.status);
-      console.error("Full error object:", JSON.stringify(error.response, null, 2));
 
-      // Better error messages
       let errorMessage = "Gagal menambahkan ke keranjang";
 
       if (error.response?.status === 401) {
@@ -156,470 +152,247 @@ const Products = () => {
     setMinPrice("");
     setMaxPrice("");
     setSortBy("");
+    setSearchQuery("");
   };
 
   const filteredProducts = getFilteredProducts();
 
   if (loading) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#f5f5f5",
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <div
-            style={{
-              border: "4px solid #f3f3f3",
-              borderTop: "4px solid #2c3e50",
-              borderRadius: "50%",
-              width: "50px",
-              height: "50px",
-              margin: "0 auto 20px",
-              animation: "spin 1s linear infinite",
-            }}
-          />
-          <p>Memuat produk...</p>
-          <style>{`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}</style>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="text-center">
+          <div className="relative">
+            <div className="w-20 h-20 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
+            <Package className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-600" size={32} />
+          </div>
+          <p className="text-gray-700 font-medium text-lg">Memuat produk...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-      {/* Header */}
-      <div
-        style={{
-          backgroundColor: "#2c3e50",
-          color: "white",
-          padding: "40px 20px",
-          marginBottom: "30px",
-        }}
-      >
-        <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
-          <h1 style={{ fontSize: "32px", fontWeight: "bold", marginBottom: "10px" }}>Semua Produk</h1>
-          <p style={{ fontSize: "16px", color: "#bdc3c7" }}>Temukan produk terbaik untuk kebutuhan Anda</p>
-        </div>
-      </div>
+    <>
+      <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 min-h-screen">
+        {/* Hero Header with Gradient */}
+        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 text-white py-16 px-5 mb-10 relative overflow-hidden">
+          <div className="absolute inset-0 bg-black opacity-10"></div>
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-white opacity-5 rounded-full"></div>
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-white opacity-5 rounded-full"></div>
 
-      <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 20px 40px" }}>
-        {/* Filter Section */}
-        <div
-          style={{
-            backgroundColor: "white",
-            padding: "25px",
-            borderRadius: "8px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            marginBottom: "30px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "20px",
-            }}
-          >
-            <h3 style={{ fontSize: "18px", fontWeight: "bold", display: "flex", alignItems: "center", gap: "8px" }}>
-              <Filter size={20} />
-              Filter & Pencarian
-            </h3>
-            <button
-              onClick={clearFilters}
-              style={{
-                background: "none",
-                border: "none",
-                color: "#e74c3c",
-                fontSize: "14px",
-                cursor: "pointer",
-                textDecoration: "underline",
-                fontWeight: "500",
-              }}
-            >
-              Reset Semua Filter
-            </button>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-              gap: "20px",
-            }}
-          >
-            <div>
-              <label
-                style={{
-                  display: "block",
-                  fontWeight: "600",
-                  marginBottom: "10px",
-                  fontSize: "14px",
-                  color: "#2c3e50",
-                }}
-              >
-                Kategori
-              </label>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  border: "2px solid #e0e0e0",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  backgroundColor: "white",
-                }}
-              >
-                <option value="">Semua Kategori</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="flex items-center gap-3 mb-4">
+              <TrendingUp size={32} className="text-yellow-400" />
+              <span className="bg-yellow-400 text-blue-900 px-4 py-1 rounded-full text-sm font-bold">Produk Terbaik</span>
             </div>
-
-            <div>
-              <label
-                style={{
-                  display: "block",
-                  fontWeight: "600",
-                  marginBottom: "10px",
-                  fontSize: "14px",
-                  color: "#2c3e50",
-                }}
-              >
-                Harga Minimum (Rp)
-              </label>
-              <input
-                type="number"
-                placeholder="Contoh: 100000"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  border: "2px solid #e0e0e0",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                }}
-              />
-            </div>
-
-            <div>
-              <label
-                style={{
-                  display: "block",
-                  fontWeight: "600",
-                  marginBottom: "10px",
-                  fontSize: "14px",
-                  color: "#2c3e50",
-                }}
-              >
-                Harga Maximum (Rp)
-              </label>
-              <input
-                type="number"
-                placeholder="Contoh: 5000000"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  border: "2px solid #e0e0e0",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                }}
-              />
-            </div>
-
-            <div>
-              <label
-                style={{
-                  display: "block",
-                  fontWeight: "600",
-                  marginBottom: "10px",
-                  fontSize: "14px",
-                  color: "#2c3e50",
-                }}
-              >
-                Urutkan Berdasarkan
-              </label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  border: "2px solid #e0e0e0",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  backgroundColor: "white",
-                }}
-              >
-                <option value="">Default</option>
-                <option value="price_asc">Harga: Rendah ke Tinggi</option>
-                <option value="price_desc">Harga: Tinggi ke Rendah</option>
-                <option value="name_asc">Nama: A-Z</option>
-                <option value="name_desc">Nama: Z-A</option>
-              </select>
-            </div>
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-3 drop-shadow-lg">Semua Produk</h1>
+            <p className="text-xl text-blue-100 max-w-2xl">Temukan produk terbaik dengan harga terjangkau untuk kebutuhan Anda</p>
           </div>
         </div>
 
-        {/* Results Info */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "25px",
-            padding: "0 5px",
-          }}
-        >
-          <p style={{ fontSize: "16px", color: "#666", fontWeight: "500" }}>
-            Menampilkan <strong style={{ color: "#2c3e50" }}>{filteredProducts.length}</strong> dari <strong style={{ color: "#2c3e50" }}>{products.length}</strong> produk
-          </p>
-        </div>
-
-        {/* Products Grid */}
-        {error ? (
-          <div
-            style={{
-              backgroundColor: "#fee",
-              color: "#c33",
-              padding: "20px",
-              borderRadius: "8px",
-              textAlign: "center",
-            }}
-          >
-            {error}
+        <div className="max-w-7xl mx-auto px-5 pb-12">
+          {/* Search Bar - Featured */}
+          <div className="mb-8 -mt-8 relative z-20">
+            <div className="bg-white rounded-2xl shadow-2xl p-3 max-w-3xl mx-auto border border-gray-100">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={24} />
+                <input type="text" placeholder="Cari produk yang Anda inginkan..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-14 pr-4 py-4 text-lg border-none focus:outline-none rounded-xl" />
+              </div>
+            </div>
           </div>
-        ) : filteredProducts.length === 0 ? (
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "60px 20px",
-              borderRadius: "8px",
-              textAlign: "center",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            }}
-          >
-            <p style={{ fontSize: "18px", color: "#666", marginBottom: "10px" }}>Tidak ada produk ditemukan</p>
-            <p style={{ fontSize: "14px", color: "#999" }}>Coba ubah filter pencarian Anda</p>
-          </div>
-        ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-              gap: "20px",
-            }}
-          >
-            {filteredProducts.map((product) => (
-              <div
-                key={product.id}
-                style={{
-                  backgroundColor: "white",
-                  borderRadius: "8px",
-                  overflow: "hidden",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                  transition: "transform 0.3s, box-shadow 0.3s",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-5px)";
-                  e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.15)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
-                }}
-              >
-                <div
-                  onClick={() => handleViewDetail(product.id)}
-                  style={{
-                    height: "200px",
-                    backgroundColor: "#f0f0f0",
-                    overflow: "hidden",
-                    position: "relative",
-                  }}
-                >
-                  {product.image_url ? (
-                    <img
-                      src={product.image_url}
-                      alt={product.name}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "48px",
-                        fontWeight: "bold",
-                        color: "#bdc3c7",
-                        backgroundColor: "#ecf0f1",
-                      }}
-                    >
-                      {product.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
 
-                  {product.stock < 10 && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "10px",
-                        right: "10px",
-                        backgroundColor: product.stock === 0 ? "#e74c3c" : "#f39c12",
-                        color: "white",
-                        padding: "4px 8px",
-                        borderRadius: "4px",
-                        fontSize: "12px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {product.stock === 0 ? "Habis" : `Sisa ${product.stock}`}
-                    </div>
-                  )}
+          {/* Filter Section - Modern Card Design */}
+          <div className="bg-white rounded-2xl shadow-lg mb-8 border border-gray-100 overflow-hidden">
+            <div className="bg-gradient-to-r from-gray-50 to-blue-50 px-6 py-4 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-bold flex items-center gap-2 text-gray-800">
+                  <Filter size={20} className="text-blue-600" />
+                  Filter & Urutkan
+                </h3>
+                <button onClick={clearFilters} className="text-red-600 text-sm font-semibold hover:text-red-700 hover:underline transition-all px-4 py-2 rounded-lg hover:bg-red-50">
+                  Reset Semua
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className="block font-bold mb-2 text-sm text-gray-700 uppercase tracking-wide">Kategori</label>
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm cursor-pointer bg-white hover:border-blue-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                  >
+                    <option value="">Semua Kategori</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
-                <div style={{ padding: "15px" }}>
-                  <div
-                    style={{
-                      fontSize: "12px",
-                      color: "#7f8c8d",
-                      marginBottom: "8px",
-                      textTransform: "uppercase",
-                      fontWeight: "600",
-                    }}
-                  >
-                    {product.category?.name || "Uncategorized"}
-                  </div>
+                <div>
+                  <label className="block font-bold mb-2 text-sm text-gray-700 uppercase tracking-wide">Harga Min (Rp)</label>
+                  <input
+                    type="number"
+                    placeholder="100.000"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm hover:border-blue-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                  />
+                </div>
 
-                  <h3
-                    onClick={() => handleViewDetail(product.id)}
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: "600",
-                      marginBottom: "10px",
-                      color: "#2c3e50",
-                      minHeight: "40px",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                    }}
-                  >
-                    {product.name}
-                  </h3>
+                <div>
+                  <label className="block font-bold mb-2 text-sm text-gray-700 uppercase tracking-wide">Harga Max (Rp)</label>
+                  <input
+                    type="number"
+                    placeholder="5.000.000"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm hover:border-blue-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                  />
+                </div>
 
-                  <div
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: "bold",
-                      color: "#27ae60",
-                      marginBottom: "15px",
-                    }}
+                <div>
+                  <label className="block font-bold mb-2 text-sm text-gray-700 uppercase tracking-wide">Urutkan</label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm cursor-pointer bg-white hover:border-blue-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
                   >
-                    Rp {Number(product.price).toLocaleString("id-ID")}
-                  </div>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "10px",
-                    }}
-                  >
-                    <button
-                      onClick={(e) => handleAddToCart(product.id, e)}
-                      disabled={product.stock === 0 || addingToCart === product.id}
-                      style={{
-                        flex: 1,
-                        padding: "10px",
-                        backgroundColor: product.stock === 0 || addingToCart === product.id ? "#95a5a6" : "#27ae60",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "6px",
-                        cursor: product.stock === 0 || addingToCart === product.id ? "not-allowed" : "pointer",
-                        fontSize: "14px",
-                        fontWeight: "500",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px",
-                        transition: "background-color 0.2s",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (product.stock > 0 && addingToCart !== product.id) {
-                          e.currentTarget.style.backgroundColor = "#229954";
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (product.stock > 0 && addingToCart !== product.id) {
-                          e.currentTarget.style.backgroundColor = "#27ae60";
-                        }
-                      }}
-                    >
-                      <ShoppingCart size={16} />
-                      {addingToCart === product.id ? "Menambahkan..." : product.stock === 0 ? "Habis" : "Keranjang"}
-                    </button>
-
-                    <button
-                      onClick={() => handleViewDetail(product.id)}
-                      style={{
-                        padding: "10px",
-                        backgroundColor: "#3498db",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "6px",
-                        cursor: "pointer",
-                        fontSize: "14px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        transition: "background-color 0.2s",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "#2980b9";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "#3498db";
-                      }}
-                    >
-                      <Eye size={16} />
-                    </button>
-                  </div>
+                    <option value="">Default</option>
+                    <option value="price_asc">💰 Termurah</option>
+                    <option value="price_desc">💎 Termahal</option>
+                    <option value="name_asc">🔤 A-Z</option>
+                    <option value="name_desc">🔤 Z-A</option>
+                  </select>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
-        )}
+
+          {/* Results Info with Stats */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 px-1">
+            <div className="flex items-center gap-4">
+              <div className="bg-white px-5 py-3 rounded-xl shadow-md border border-gray-100">
+                <p className="text-sm text-gray-500 mb-1">Total Produk</p>
+                <p className="text-2xl font-bold text-blue-600">{filteredProducts.length}</p>
+              </div>
+              {filteredProducts.length !== products.length && (
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-xl shadow-md">
+                  <p className="text-xs opacity-90">Terfilter dari</p>
+                  <p className="text-lg font-bold">{products.length} produk</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Products Grid */}
+          {error ? (
+            <div className="bg-gradient-to-r from-red-50 to-red-100 border-2 border-red-200 text-red-700 p-6 rounded-2xl text-center shadow-lg">
+              <div className="text-4xl mb-3">⚠️</div>
+              <p className="font-semibold text-lg">{error}</p>
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="bg-white p-16 rounded-2xl text-center shadow-lg border border-gray-100">
+              <div className="text-6xl mb-4">🔍</div>
+              <p className="text-xl font-bold text-gray-700 mb-2">Tidak ada produk ditemukan</p>
+              <p className="text-gray-500 mb-6">Coba ubah filter atau kata kunci pencarian Anda</p>
+              <button onClick={clearFilters} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-md">
+                Reset Filter
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.map((product) => (
+                <div key={product.id} className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100">
+                  {/* Image Container */}
+                  <div onClick={() => handleViewDetail(product.id)} className="relative h-56 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                    {product.image_url ? (
+                      <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-6xl font-bold text-gray-300 bg-gradient-to-br from-gray-200 to-gray-300">{product.name.charAt(0).toUpperCase()}</div>
+                    )}
+
+                    {/* Stock Badge */}
+                    {product.stock < 10 && (
+                      <div
+                        className={`absolute top-3 right-3 ${
+                          product.stock === 0 ? "bg-gradient-to-r from-red-500 to-red-600" : "bg-gradient-to-r from-orange-500 to-orange-600"
+                        } text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg`}
+                      >
+                        {product.stock === 0 ? "❌ Habis" : `⚡ ${product.stock} Tersisa`}
+                      </div>
+                    )}
+
+                    {/* Overlay on Hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute bottom-4 left-4 right-4">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewDetail(product.id);
+                          }}
+                          className="w-full bg-white text-gray-800 py-2 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
+                        >
+                          <Eye size={18} />
+                          Lihat Detail
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-5">
+                    {/* Category Badge */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="inline-block bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">{product.category?.name || "Uncategorized"}</span>
+                    </div>
+
+                    {/* Product Name */}
+                    <h3 onClick={() => handleViewDetail(product.id)} className="text-base font-bold mb-3 text-gray-800 min-h-12 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                      {product.name}
+                    </h3>
+
+                    {/* Price */}
+                    <div className="mb-4">
+                      <div className="text-2xl font-extrabold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Rp {Number(product.price).toLocaleString("id-ID")}</div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={(e) => handleAddToCart(product.id, e)}
+                        disabled={product.stock === 0 || addingToCart === product.id}
+                        className={`flex-1 py-3 px-4 ${
+                          product.stock === 0 || addingToCart === product.id
+                            ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                            : "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-md hover:shadow-lg"
+                        } rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all`}
+                      >
+                        <ShoppingCart size={18} />
+                        {addingToCart === product.id ? "..." : product.stock === 0 ? "Habis" : "Beli"}
+                      </button>
+
+                      <button
+                        onClick={() => handleViewDetail(product.id)}
+                        className="py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl flex items-center justify-center transition-all shadow-md hover:shadow-lg"
+                      >
+                        <Eye size={18} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+
+      <Footer />
+    </>
   );
 };
 

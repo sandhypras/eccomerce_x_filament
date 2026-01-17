@@ -4,10 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-
 class Order extends Model
 {
-    protected $fillable = ['user_id','invoice_number','total_price','status','payment_proof'];
+    protected $fillable = [
+        'user_id',
+        'invoice_number',
+        'shipping_address',
+        'phone',
+        'notes',
+        'payment_method',
+        'payment_proof',
+        'payment_status',
+        'total',
+        'total_price',
+        'status'
+    ];
 
     public function user()
     {
@@ -15,6 +26,12 @@ class Order extends Model
     }
 
     public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    // Alias untuk compatibility
+    public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
     }

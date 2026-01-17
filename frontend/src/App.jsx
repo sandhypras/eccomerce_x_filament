@@ -1,5 +1,5 @@
 // src/App.jsx
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -12,8 +12,13 @@ import ProductDetail from "./pages/ProductDetail";
 import About from "./pages/About";
 import { Component } from "react";
 import Products from "./pages/Products";
-import LoginOTP from "./pages/LoginOTP";
-
+import Location from "./pages/Location";
+import Footer from "./components/Footer";
+import Checkout from "./pages/Checkout";
+import OrderSuccess from "./pages/OrderSuccess";
+import MyOrders from "./pages/MyOrders";
+import OrderDetails from "./pages/OrderDetail";
+import Profile from "./pages/Profile";
 // Error Boundary Component
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -66,25 +71,43 @@ class ErrorBoundary extends Component {
   }
 }
 
+// Layout Component with conditional Navbar
+function AppLayout() {
+  const location = useLocation();
+
+  // Daftar path yang tidak memerlukan Navbar
+  const noNavbarRoutes = ["/login", "/register", "/login-otp"];
+  const shouldShowNavbar = !noNavbarRoutes.includes(location.pathname);
+
+  return (
+    <div style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
+      {shouldShowNavbar && <Navbar />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/category/:id" element={<CategoryProducts />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/location" element={<Location />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-success" element={<OrderSuccess />} />
+        <Route path="/MyOrders" element={<MyOrders />} />
+        <Route path="/order/:id" element={<OrderDetails />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
+    </div>
+  );
+}
+
 function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
         <Router>
-          <div style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/category/:id" element={<CategoryProducts />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/login-otp" element={<LoginOTP />} />
-            </Routes>
-          </div>
+          <AppLayout />
         </Router>
       </AuthProvider>
     </ErrorBoundary>

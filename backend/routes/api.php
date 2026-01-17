@@ -8,18 +8,28 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\OrderPaymentController;
-use App\Http\Controllers\Api\OtpAuthController;
+use App\Http\Controllers\Api\OtpRegistrationController;
+use App\Http\Controllers\Api\ProfileController;
+// TAMBAHKAN INI
 
 // ROUTES FOR PUBLIC ACCESS
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/{id}', [CategoryController::class, 'show']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
-Route::get('/search', [ProductController::class, 'search']); // TAMBAHKAN INI
-Route::post('/register', [AuthController::class, 'register']);
+Route::get('/search', [ProductController::class, 'search']);
+
+// Authentication Routes
+Route::post('/register', [AuthController::class, 'register']); // Keep for backup
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/otp/send', [OtpAuthController::class, 'sendOtp']);
-Route::post('/otp/verify', [OtpAuthController::class, 'verifyOtp']);
+
+
+// OTP REGISTRATION ROUTES (NEW)
+Route::prefix('register')->group(function () {
+    Route::post('/send-otp', [OtpRegistrationController::class, 'sendOtp']);
+    Route::post('/verify-otp', [OtpRegistrationController::class, 'verifyOtpAndRegister']);
+    Route::post('/resend-otp', [OtpRegistrationController::class, 'resendOtp']);
+});
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -34,9 +44,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/cart/{id}', [CartController::class, 'destroy']);
     Route::post('/checkout', [OrderController::class, 'checkout']);
     Route::post('/orders/{order}/upload-payment-proof', [OrderPaymentController::class, 'upload']);
-});
-
-Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
-    $request->user()->currentAccessToken()->delete();
-    return response()->json(['message' => 'Logout success']);
+     Route::get('/orders', [OrderController::class, 'index']);
+      Route::get('/orders', [OrderController::class, 'index']); // List semua order user
+    Route::get('/orders/{order}', [OrderController::class, 'show']);
+      Route::put('/profile/update', [ProfileController::class, 'update']);
+    Route::put('/profile/change-password', [ProfileController::class, 'changePassword']);
 });
