@@ -90,7 +90,6 @@ const Profile = () => {
       setMessage({ type: "success", text: "Profil berhasil diperbarui!" });
       setIsEditing(false);
 
-      // Refresh auth context (optional, jika ada method refresh)
       setTimeout(() => setMessage({ type: "", text: "" }), 3000);
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -147,118 +146,55 @@ const Profile = () => {
 
   if (!user) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#f5f5f5",
-        }}
-      >
-        <p>Memuat data profil...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="w-12 h-12 border-3 border-gray-300 border-t-orange-500 rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-gray-600">Memuat data profil...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ backgroundColor: "#f5f5f5", minHeight: "100vh", paddingBottom: "40px" }}>
+    <div className="bg-gray-50 min-h-screen pb-12">
       {/* Header */}
-      <div
-        style={{
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-          padding: "60px 20px",
-          marginBottom: "30px",
-        }}
-      >
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <h1 style={{ fontSize: "36px", fontWeight: "bold", marginBottom: "10px" }}>👤 Profil Saya</h1>
-          <p style={{ fontSize: "16px", opacity: 0.9 }}>Kelola informasi akun dan keamanan Anda</p>
+      <div className="bg-orange-500 text-white py-12 px-5 mb-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Profil Saya</h1>
+          <p className="text-orange-100">Kelola informasi akun dan keamanan Anda</p>
         </div>
       </div>
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px" }}>
+      <div className="max-w-7xl mx-auto px-5">
         {/* Message Alert */}
         {message.text && (
           <div
-            style={{
-              padding: "16px 20px",
-              borderRadius: "12px",
-              marginBottom: "20px",
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              backgroundColor: message.type === "success" ? "#d4edda" : "#f8d7da",
-              border: `2px solid ${message.type === "success" ? "#c3e6cb" : "#f5c6cb"}`,
-              color: message.type === "success" ? "#155724" : "#721c24",
-            }}
+            className={`p-4 rounded-lg mb-6 flex items-center gap-3 ${
+              message.type === "success"
+                ? "bg-green-50 border border-green-200 text-green-700"
+                : "bg-red-50 border border-red-200 text-red-700"
+            }`}
           >
             {message.type === "success" ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
-            <span style={{ fontWeight: "500" }}>{message.text}</span>
+            <span className="font-medium">{message.text}</span>
           </div>
         )}
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: window.innerWidth > 768 ? "1fr 350px" : "1fr",
-            gap: "20px",
-          }}
-        >
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
-          <div>
+          <div className="lg:col-span-2 space-y-6">
             {/* Profile Info Card */}
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: "30px",
-                borderRadius: "16px",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                marginBottom: "20px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "25px",
-                }}
-              >
-                <h2
-                  style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    color: "#1e293b",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                  }}
-                >
-                  <User size={24} />
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  <User size={24} className="text-orange-600" />
                   Informasi Profil
                 </h2>
 
                 {!isEditing && (
                   <button
                     onClick={() => setIsEditing(true)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      padding: "10px 20px",
-                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "10px",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                      cursor: "pointer",
-                      transition: "transform 0.2s",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+                    className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-semibold transition-colors"
                   >
                     <Edit2 size={16} />
                     Edit Profil
@@ -268,43 +204,15 @@ const Profile = () => {
 
               <form onSubmit={handleUpdateProfile}>
                 {/* Avatar */}
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    marginBottom: "30px",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "120px",
-                      height: "120px",
-                      borderRadius: "50%",
-                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "48px",
-                      fontWeight: "bold",
-                      color: "white",
-                      boxShadow: "0 8px 16px rgba(102, 126, 234, 0.3)",
-                    }}
-                  >
+                <div className="flex justify-center mb-6">
+                  <div className="w-24 h-24 rounded-full bg-orange-500 flex items-center justify-center text-4xl font-bold text-white shadow-lg">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
                 </div>
 
                 {/* Name Field */}
-                <div style={{ marginBottom: "20px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                      color: "#64748b",
-                      marginBottom: "8px",
-                    }}
-                  >
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Nama Lengkap
                   </label>
                   <input
@@ -313,30 +221,15 @@ const Profile = () => {
                     value={profileData.name}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    style={{
-                      width: "100%",
-                      padding: "12px 16px",
-                      border: "2px solid #e2e8f0",
-                      borderRadius: "10px",
-                      fontSize: "15px",
-                      backgroundColor: isEditing ? "white" : "#f8fafc",
-                      color: "#1e293b",
-                      transition: "all 0.2s",
-                    }}
+                    className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 transition-colors ${
+                      !isEditing ? "bg-gray-50 text-gray-600" : "bg-white"
+                    }`}
                   />
                 </div>
 
                 {/* Email Field */}
-                <div style={{ marginBottom: "20px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                      color: "#64748b",
-                      marginBottom: "8px",
-                    }}
-                  >
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Email
                   </label>
                   <input
@@ -345,35 +238,18 @@ const Profile = () => {
                     value={profileData.email}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    style={{
-                      width: "100%",
-                      padding: "12px 16px",
-                      border: "2px solid #e2e8f0",
-                      borderRadius: "10px",
-                      fontSize: "15px",
-                      backgroundColor: isEditing ? "white" : "#f8fafc",
-                      color: "#1e293b",
-                      transition: "all 0.2s",
-                    }}
+                    className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 transition-colors ${
+                      !isEditing ? "bg-gray-50 text-gray-600" : "bg-white"
+                    }`}
                   />
                 </div>
 
                 {/* Member Since */}
-                <div
-                  style={{
-                    padding: "16px",
-                    backgroundColor: "#f8fafc",
-                    borderRadius: "10px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    marginBottom: "20px",
-                  }}
-                >
-                  <Calendar size={20} color="#64748b" />
+                <div className="p-4 bg-gray-50 rounded-lg flex items-center gap-3 mb-5">
+                  <Calendar size={20} className="text-gray-600" />
                   <div>
-                    <p style={{ fontSize: "12px", color: "#64748b", marginBottom: "2px" }}>Bergabung Sejak</p>
-                    <p style={{ fontSize: "14px", fontWeight: "600", color: "#1e293b" }}>
+                    <p className="text-xs text-gray-500 mb-1">Bergabung Sejak</p>
+                    <p className="text-sm font-semibold text-gray-800">
                       {new Date(user.created_at || Date.now()).toLocaleDateString("id-ID", {
                         day: "numeric",
                         month: "long",
@@ -385,25 +261,11 @@ const Profile = () => {
 
                 {/* Action Buttons */}
                 {isEditing && (
-                  <div style={{ display: "flex", gap: "10px" }}>
+                  <div className="flex gap-3">
                     <button
                       type="submit"
                       disabled={loading}
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "8px",
-                        padding: "14px",
-                        background: loading ? "#94a3b8" : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "10px",
-                        fontSize: "15px",
-                        fontWeight: "600",
-                        cursor: loading ? "not-allowed" : "pointer",
-                      }}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Save size={18} />
                       {loading ? "Menyimpan..." : "Simpan Perubahan"}
@@ -413,21 +275,7 @@ const Profile = () => {
                       type="button"
                       onClick={handleCancelEdit}
                       disabled={loading}
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "8px",
-                        padding: "14px",
-                        backgroundColor: "#f1f5f9",
-                        color: "#64748b",
-                        border: "2px solid #e2e8f0",
-                        borderRadius: "10px",
-                        fontSize: "15px",
-                        fontWeight: "600",
-                        cursor: loading ? "not-allowed" : "pointer",
-                      }}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <X size={18} />
                       Batal
@@ -438,49 +286,17 @@ const Profile = () => {
             </div>
 
             {/* Change Password Card */}
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: "30px",
-                borderRadius: "16px",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: showPasswordForm ? "25px" : "0",
-                }}
-              >
-                <h2
-                  style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    color: "#1e293b",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                  }}
-                >
-                  <Lock size={24} />
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  <Lock size={24} className="text-orange-600" />
                   Keamanan Akun
                 </h2>
 
                 {!showPasswordForm && (
                   <button
                     onClick={() => setShowPasswordForm(true)}
-                    style={{
-                      padding: "10px 20px",
-                      backgroundColor: "#f1f5f9",
-                      color: "#64748b",
-                      border: "2px solid #e2e8f0",
-                      borderRadius: "10px",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                      cursor: "pointer",
-                    }}
+                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 rounded-lg font-semibold transition-colors"
                   >
                     Ubah Password
                   </button>
@@ -488,17 +304,9 @@ const Profile = () => {
               </div>
 
               {showPasswordForm && (
-                <form onSubmit={handleChangePassword}>
-                  <div style={{ marginBottom: "16px" }}>
-                    <label
-                      style={{
-                        display: "block",
-                        fontSize: "14px",
-                        fontWeight: "600",
-                        color: "#64748b",
-                        marginBottom: "8px",
-                      }}
-                    >
+                <form onSubmit={handleChangePassword} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Password Saat Ini
                     </label>
                     <input
@@ -507,26 +315,12 @@ const Profile = () => {
                       value={passwordData.current_password}
                       onChange={handlePasswordChange}
                       required
-                      style={{
-                        width: "100%",
-                        padding: "12px 16px",
-                        border: "2px solid #e2e8f0",
-                        borderRadius: "10px",
-                        fontSize: "15px",
-                      }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                     />
                   </div>
 
-                  <div style={{ marginBottom: "16px" }}>
-                    <label
-                      style={{
-                        display: "block",
-                        fontSize: "14px",
-                        fontWeight: "600",
-                        color: "#64748b",
-                        marginBottom: "8px",
-                      }}
-                    >
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Password Baru
                     </label>
                     <input
@@ -536,26 +330,12 @@ const Profile = () => {
                       onChange={handlePasswordChange}
                       required
                       minLength={8}
-                      style={{
-                        width: "100%",
-                        padding: "12px 16px",
-                        border: "2px solid #e2e8f0",
-                        borderRadius: "10px",
-                        fontSize: "15px",
-                      }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                     />
                   </div>
 
-                  <div style={{ marginBottom: "20px" }}>
-                    <label
-                      style={{
-                        display: "block",
-                        fontSize: "14px",
-                        fontWeight: "600",
-                        color: "#64748b",
-                        marginBottom: "8px",
-                      }}
-                    >
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Konfirmasi Password Baru
                     </label>
                     <input
@@ -565,31 +345,15 @@ const Profile = () => {
                       onChange={handlePasswordChange}
                       required
                       minLength={8}
-                      style={{
-                        width: "100%",
-                        padding: "12px 16px",
-                        border: "2px solid #e2e8f0",
-                        borderRadius: "10px",
-                        fontSize: "15px",
-                      }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                     />
                   </div>
 
-                  <div style={{ display: "flex", gap: "10px" }}>
+                  <div className="flex gap-3 pt-2">
                     <button
                       type="submit"
                       disabled={loading}
-                      style={{
-                        flex: 1,
-                        padding: "14px",
-                        background: loading ? "#94a3b8" : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "10px",
-                        fontSize: "15px",
-                        fontWeight: "600",
-                        cursor: loading ? "not-allowed" : "pointer",
-                      }}
+                      className="flex-1 px-4 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {loading ? "Mengubah..." : "Ubah Password"}
                     </button>
@@ -605,17 +369,7 @@ const Profile = () => {
                         });
                       }}
                       disabled={loading}
-                      style={{
-                        flex: 1,
-                        padding: "14px",
-                        backgroundColor: "#f1f5f9",
-                        color: "#64748b",
-                        border: "2px solid #e2e8f0",
-                        borderRadius: "10px",
-                        fontSize: "15px",
-                        fontWeight: "600",
-                        cursor: loading ? "not-allowed" : "pointer",
-                      }}
+                      className="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Batal
                     </button>
@@ -626,196 +380,70 @@ const Profile = () => {
           </div>
 
           {/* Sidebar */}
-          <div>
+          <div className="lg:col-span-1 space-y-6">
             {/* Statistics Card */}
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: "25px",
-                borderRadius: "16px",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                marginBottom: "20px",
-              }}
-            >
-              <h3
-                style={{
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  color: "#1e293b",
-                  marginBottom: "20px",
-                }}
-              >
-                📊 Statistik Belanja
+            <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+              <h3 className="text-base font-bold text-gray-800 mb-4">
+                Statistik Belanja
               </h3>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-                <div
-                  style={{
-                    padding: "16px",
-                    background: "linear-gradient(135deg, #667eea20 0%, #764ba220 100%)",
-                    borderRadius: "12px",
-                    border: "2px solid #667eea30",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <Package size={20} color="#667eea" />
-                      <span style={{ fontSize: "14px", color: "#64748b" }}>Total Pesanan</span>
+              <div className="space-y-3">
+                <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Package size={20} className="text-orange-600" />
+                      <span className="text-sm text-gray-700">Total Pesanan</span>
                     </div>
-                    <span style={{ fontSize: "24px", fontWeight: "bold", color: "#667eea" }}>{stats.totalOrders}</span>
+                    <span className="text-2xl font-bold text-orange-600">{stats.totalOrders}</span>
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    padding: "16px",
-                    background: "linear-gradient(135deg, #f39c1220 0%, #f39c1220 100%)",
-                    borderRadius: "12px",
-                    border: "2px solid #f39c1230",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <ShoppingCart size={20} color="#f39c12" />
-                      <span style={{ fontSize: "14px", color: "#64748b" }}>Sedang Diproses</span>
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <ShoppingCart size={20} className="text-blue-600" />
+                      <span className="text-sm text-gray-700">Diproses</span>
                     </div>
-                    <span style={{ fontSize: "24px", fontWeight: "bold", color: "#f39c12" }}>{stats.pendingOrders}</span>
+                    <span className="text-2xl font-bold text-blue-600">{stats.pendingOrders}</span>
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    padding: "16px",
-                    background: "linear-gradient(135deg, #27ae6020 0%, #27ae6020 100%)",
-                    borderRadius: "12px",
-                    border: "2px solid #27ae6030",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <CheckCircle size={20} color="#27ae60" />
-                      <span style={{ fontSize: "14px", color: "#64748b" }}>Selesai</span>
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle size={20} className="text-green-600" />
+                      <span className="text-sm text-gray-700">Selesai</span>
                     </div>
-                    <span style={{ fontSize: "24px", fontWeight: "bold", color: "#27ae60" }}>{stats.completedOrders}</span>
+                    <span className="text-2xl font-bold text-green-600">{stats.completedOrders}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Quick Actions */}
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: "25px",
-                borderRadius: "16px",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-              }}
-            >
-              <h3
-                style={{
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  color: "#1e293b",
-                  marginBottom: "15px",
-                }}
-              >
-                ⚡ Aksi Cepat
+            <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+              <h3 className="text-base font-bold text-gray-800 mb-4">
+                Aksi Cepat
               </h3>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div className="space-y-2">
                 <button
                   onClick={() => navigate("/MyOrders")}
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    backgroundColor: "#f8fafc",
-                    border: "2px solid #e2e8f0",
-                    borderRadius: "10px",
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    color: "#64748b",
-                    cursor: "pointer",
-                    textAlign: "left",
-                    transition: "all 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#e0e7ff";
-                    e.currentTarget.style.borderColor = "#667eea";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f8fafc";
-                    e.currentTarget.style.borderColor = "#e2e8f0";
-                  }}
+                  className="w-full px-4 py-3 bg-gray-50 hover:bg-orange-50 border border-gray-200 hover:border-orange-300 rounded-lg text-sm font-semibold text-gray-700 hover:text-orange-600 text-left transition-colors"
                 >
                   📦 Lihat Pesanan Saya
                 </button>
 
                 <button
                   onClick={() => navigate("/products")}
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    backgroundColor: "#f8fafc",
-                    border: "2px solid #e2e8f0",
-                    borderRadius: "10px",
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    color: "#64748b",
-                    cursor: "pointer",
-                    textAlign: "left",
-                    transition: "all 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#e0e7ff";
-                    e.currentTarget.style.borderColor = "#667eea";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f8fafc";
-                    e.currentTarget.style.borderColor = "#e2e8f0";
-                  }}
+                  className="w-full px-4 py-3 bg-gray-50 hover:bg-orange-50 border border-gray-200 hover:border-orange-300 rounded-lg text-sm font-semibold text-gray-700 hover:text-orange-600 text-left transition-colors"
                 >
                   🛍️ Lanjut Belanja
                 </button>
 
                 <button
                   onClick={logout}
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    backgroundColor: "#fee",
-                    border: "2px solid #fdd",
-                    borderRadius: "10px",
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    color: "#e74c3c",
-                    cursor: "pointer",
-                    textAlign: "left",
-                    transition: "all 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#fdd";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#fee";
-                  }}
+                  className="w-full px-4 py-3 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg text-sm font-semibold text-red-600 text-left transition-colors"
                 >
                   🚪 Logout
                 </button>
