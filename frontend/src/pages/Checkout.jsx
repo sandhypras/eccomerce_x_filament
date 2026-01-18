@@ -48,6 +48,14 @@ const Checkout = () => {
         items = response.data.data;
       }
 
+      // Log untuk debug image
+      items.forEach((item) => {
+        console.log("📦 Cart Item:", item);
+        console.log("📦 Product:", item.product);
+        console.log("📦 Image URL:", item.product?.image_url);
+        console.log("📦 Image:", item.product?.image);
+      });
+
       console.log("✅ Checkout - Cart items:", items);
       setCartItems(items);
     } catch (error) {
@@ -180,8 +188,8 @@ const Checkout = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mb-4"></div>
-          <p className="text-gray-600 font-medium">Memuat data keranjang...</p>
+          <div className="w-12 h-12 border-3 border-gray-300 border-t-orange-500 rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-gray-600">Memuat data keranjang...</p>
         </div>
       </div>
     );
@@ -190,11 +198,11 @@ const Checkout = () => {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center bg-white p-12 rounded-2xl shadow-lg">
+        <div className="text-center bg-white p-12 rounded-lg shadow-lg">
           <ShoppingBag size={64} className="mx-auto text-gray-300 mb-4" />
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Keranjang Kosong</h2>
           <p className="text-gray-600 mb-6">Silakan tambahkan produk ke keranjang terlebih dahulu</p>
-          <button onClick={() => navigate("/products")} className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:shadow-xl transition-all transform hover:scale-105">
+          <button onClick={() => navigate("/products")} className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
             Belanja Sekarang
           </button>
         </div>
@@ -203,31 +211,31 @@ const Checkout = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 pb-12">
+    <div className="min-h-screen bg-gray-50 pb-12">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-12 mb-8">
+      <div className="bg-orange-500 text-white py-12 mb-8">
         <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-2">Checkout</h1>
-          <p className="text-blue-100">Lengkapi data pengiriman dan lakukan pembayaran</p>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Checkout</h1>
+          <p className="text-orange-100">Lengkapi data pengiriman dan lakukan pembayaran</p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Form */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Shipping Information */}
-              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <MapPin className="text-blue-600" size={28} />
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h2 className="text-xl font-bold text-gray-800 mb-5 flex items-center gap-2">
+                  <MapPin className="text-orange-600" size={24} />
                   Informasi Pengiriman
                 </h2>
 
-                <div className="space-y-5">
+                <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Nama Penerima</label>
-                    <input type="text" value={user?.name || ""} disabled className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-50 text-gray-600 font-medium" />
+                    <input type="text" value={user?.name || ""} disabled className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600" />
                   </div>
 
                   <div>
@@ -239,7 +247,7 @@ const Checkout = () => {
                       placeholder="Contoh: 08123456789"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all ${errors.phone ? "border-red-500 focus:ring-red-200" : "border-gray-200 focus:ring-blue-200 focus:border-blue-400"}`}
+                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-all ${errors.phone ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-orange-200 focus:border-orange-500"}`}
                     />
                     {errors.phone && (
                       <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
@@ -258,8 +266,8 @@ const Checkout = () => {
                       value={shippingAddress}
                       onChange={(e) => setShippingAddress(e.target.value)}
                       rows={4}
-                      className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all resize-y ${
-                        errors.shippingAddress ? "border-red-500 focus:ring-red-200" : "border-gray-200 focus:ring-blue-200 focus:border-blue-400"
+                      className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-all resize-y ${
+                        errors.shippingAddress ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-orange-200 focus:border-orange-500"
                       }`}
                     />
                     {errors.shippingAddress && (
@@ -277,33 +285,33 @@ const Checkout = () => {
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       rows={3}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all resize-y"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 transition-all resize-y"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Payment Information */}
-              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <CreditCard className="text-purple-600" size={28} />
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h2 className="text-xl font-bold text-gray-800 mb-5 flex items-center gap-2">
+                  <CreditCard className="text-orange-600" size={24} />
                   Informasi Pembayaran
                 </h2>
 
-                <div className="space-y-5">
+                <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-3">Metode Pembayaran</label>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl p-6">
-                      <div className="flex items-center mb-4">
-                        <input type="radio" id="transfer" name="paymentMethod" value="transfer" checked={paymentMethod === "transfer"} onChange={(e) => setPaymentMethod(e.target.value)} className="w-4 h-4 text-blue-600 mr-3" />
-                        <label htmlFor="transfer" className="text-lg font-bold text-gray-800">
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-5">
+                      <div className="flex items-center mb-3">
+                        <input type="radio" id="transfer" name="paymentMethod" value="transfer" checked={paymentMethod === "transfer"} onChange={(e) => setPaymentMethod(e.target.value)} className="w-4 h-4 text-orange-600 mr-3" />
+                        <label htmlFor="transfer" className="text-base font-bold text-gray-800">
                           Transfer Bank
                         </label>
                       </div>
 
-                      <div className="bg-white rounded-lg p-5 space-y-2 text-sm">
-                        <p className="font-bold text-gray-800 mb-3">Rekening Tujuan:</p>
+                      <div className="bg-white rounded-lg p-4 space-y-2 text-sm">
+                        <p className="font-bold text-gray-800 mb-2">Rekening Tujuan:</p>
                         <div className="grid grid-cols-2 gap-2">
                           <span className="text-gray-600">Bank:</span>
                           <span className="font-semibold">BCA</span>
@@ -314,7 +322,7 @@ const Checkout = () => {
                           <span className="text-gray-600">Atas Nama:</span>
                           <span className="font-semibold">TokoKu Electronics</span>
                         </div>
-                        <p className="text-red-600 text-xs mt-3 font-medium">* Silakan upload bukti transfer setelah melakukan pembayaran</p>
+                        <p className="text-red-600 text-xs mt-2 font-medium">* Silakan upload bukti transfer setelah melakukan pembayaran</p>
                       </div>
                     </div>
                   </div>
@@ -326,27 +334,14 @@ const Checkout = () => {
                     </label>
 
                     <div
-                      className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${errors.paymentProof ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50 hover:border-blue-400 hover:bg-blue-50"}`}
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                        e.currentTarget.classList.add("border-blue-500", "bg-blue-100");
-                      }}
-                      onDragLeave={(e) => {
-                        e.currentTarget.classList.remove("border-blue-500", "bg-blue-100");
-                      }}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        e.currentTarget.classList.remove("border-blue-500", "bg-blue-100");
-                        const file = e.dataTransfer.files[0];
-                        if (file) {
-                          handleFileChange({ target: { files: [file] } });
-                        }
-                      }}
+                      className={`border-2 border-dashed rounded-lg p-6 text-center transition-all cursor-pointer ${
+                        errors.paymentProof ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50 hover:border-orange-400 hover:bg-orange-50"
+                      }`}
                     >
                       <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" id="payment-proof-input" />
                       <label htmlFor="payment-proof-input" className="cursor-pointer">
                         {paymentProofPreview ? (
-                          <div className="space-y-3">
+                          <div className="space-y-2">
                             <img src={paymentProofPreview} alt="Payment proof preview" className="max-w-full max-h-48 mx-auto rounded-lg shadow-md" />
                             <p className="text-green-600 font-semibold flex items-center justify-center gap-2">
                               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -357,9 +352,9 @@ const Checkout = () => {
                             <p className="text-gray-500 text-xs">Klik untuk mengganti file</p>
                           </div>
                         ) : (
-                          <div className="space-y-3">
-                            <Upload size={48} className="mx-auto text-gray-400" />
-                            <p className="text-gray-600 font-medium">Klik atau drag & drop file di sini</p>
+                          <div className="space-y-2">
+                            <Upload size={40} className="mx-auto text-gray-400" />
+                            <p className="text-gray-600 font-medium">Klik untuk upload file</p>
                             <p className="text-gray-400 text-xs">Format: JPG, PNG (Max 5MB)</p>
                           </div>
                         )}
@@ -377,13 +372,7 @@ const Checkout = () => {
               </div>
 
               {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={submitting}
-                className={`w-full py-4 rounded-xl font-bold text-lg text-white transition-all transform ${
-                  submitting ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:shadow-2xl hover:scale-105"
-                }`}
-              >
+              <button type="submit" disabled={submitting} className={`w-full py-3 rounded-lg font-bold text-base text-white transition-all ${submitting ? "bg-gray-400 cursor-not-allowed" : "bg-orange-500 hover:bg-orange-600"}`}>
                 {submitting ? (
                   <span className="flex items-center justify-center gap-2">
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -398,30 +387,45 @@ const Checkout = () => {
 
           {/* Right Column - Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 sticky top-24">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6 pb-4 border-b-2 border-gray-100">Ringkasan Pesanan</h2>
+            <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200 sticky top-24">
+              <h2 className="text-xl font-bold text-gray-800 mb-5 pb-4 border-b border-gray-200">Ringkasan Pesanan</h2>
 
               {/* Cart Items */}
-              <div className="space-y-4 mb-6 max-h-64 overflow-y-auto">
+              <div className="space-y-4 mb-5 max-h-64 overflow-y-auto">
                 {cartItems.map((item) => {
                   const product = item.product || {};
                   const price = parseFloat(item.price || product.price || 0);
                   const qty = parseInt(item.qty || item.quantity || 1);
                   const itemTotal = price * qty;
 
+                  // Handle image URL - PERBAIKAN UTAMA
+                  const imageUrl = product.image_url || (product.image ? `http://localhost:8000/storage/${product.image}` : null);
+
                   return (
-                    <div key={item.id} className="flex gap-4 pb-4 border-b border-gray-100 last:border-0">
+                    <div key={item.id} className="flex gap-3 pb-4 border-b border-gray-100 last:border-0">
                       <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                        {product.image_url ? (
-                          <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                        {imageUrl ? (
+                          <img
+                            src={imageUrl}
+                            alt={product.name || "Product"}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              console.error("❌ Failed to load image:", imageUrl);
+                              e.target.style.display = "none";
+                              const fallback = document.createElement("div");
+                              fallback.className = "w-full h-full flex items-center justify-center text-2xl font-bold text-gray-300";
+                              fallback.textContent = product.name?.charAt(0) || "?";
+                              e.target.parentElement.appendChild(fallback);
+                            }}
+                          />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-gray-300">{product.name?.charAt(0) || "?"}</div>
                         )}
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-gray-800 text-sm mb-1 line-clamp-2">{product.name || "Produk"}</h4>
                         <p className="text-xs text-gray-500 mb-1">Qty: {qty}</p>
-                        <p className="font-bold text-blue-600">Rp {itemTotal.toLocaleString("id-ID")}</p>
+                        <p className="font-bold text-orange-600">Rp {itemTotal.toLocaleString("id-ID")}</p>
                       </div>
                     </div>
                   );
@@ -429,20 +433,20 @@ const Checkout = () => {
               </div>
 
               {/* Total */}
-              <div className="space-y-3 pt-6 border-t-2 border-gray-100">
-                <div className="flex justify-between text-gray-600">
+              <div className="space-y-3 pt-5 border-t border-gray-200">
+                <div className="flex justify-between text-gray-600 text-sm">
                   <span>Subtotal ({cartItems.length} item)</span>
                   <span>Rp {total.toLocaleString("id-ID")}</span>
                 </div>
 
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-gray-600 text-sm">
                   <span>Ongkos Kirim</span>
                   <span className="text-green-600 font-semibold">GRATIS</span>
                 </div>
 
-                <div className="flex justify-between text-2xl font-bold text-gray-800 pt-4 border-t-2 border-gray-100">
+                <div className="flex justify-between text-xl font-bold text-gray-800 pt-3 border-t border-gray-200">
                   <span>Total</span>
-                  <span className="text-blue-600">Rp {total.toLocaleString("id-ID")}</span>
+                  <span className="text-orange-600">Rp {total.toLocaleString("id-ID")}</span>
                 </div>
               </div>
             </div>

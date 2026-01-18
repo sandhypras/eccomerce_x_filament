@@ -18,7 +18,7 @@ const About = () => {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     document.querySelectorAll("[data-animate]").forEach((el) => {
@@ -185,33 +185,6 @@ const About = () => {
         </section>
 
         {/* Stats Section */}
-        <section id="stats" data-animate className="relative bg-gradient-to-br from-orange-600 via-orange-500 to-amber-600 text-white py-16 overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 left-1/4 w-72 h-72 bg-white rounded-full filter blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-yellow-300 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: "1s" }}></div>
-          </div>
-
-          <div className={`relative max-w-6xl mx-auto px-5 transition-all duration-1000 ${isVisible.stats ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              <div className="transform hover:scale-110 transition-transform duration-300">
-                <h3 className="text-5xl md:text-6xl font-bold mb-2">{counters.years}+</h3>
-                <p className="text-base text-orange-100">Tahun Pengalaman</p>
-              </div>
-              <div className="transform hover:scale-110 transition-transform duration-300">
-                <h3 className="text-5xl md:text-6xl font-bold mb-2">{counters.customers}+</h3>
-                <p className="text-base text-orange-100">Pelanggan Puas</p>
-              </div>
-              <div className="transform hover:scale-110 transition-transform duration-300">
-                <h3 className="text-5xl md:text-6xl font-bold mb-2">{counters.products}+</h3>
-                <p className="text-base text-orange-100">Produk Tersedia</p>
-              </div>
-              <div className="transform hover:scale-110 transition-transform duration-300">
-                <h3 className="text-5xl md:text-6xl font-bold mb-2">24/7</h3>
-                <p className="text-base text-orange-100">Customer Support</p>
-              </div>
-            </div>
-          </div>
-        </section>
       </div>
       <Footer />
     </>
