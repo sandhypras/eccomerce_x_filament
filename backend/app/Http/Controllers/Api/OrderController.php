@@ -8,6 +8,8 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderNotificationMail;
 
 class OrderController extends Controller
 {
@@ -33,6 +35,10 @@ class OrderController extends Controller
                 'total_amount' => $order->total_price,
                 'total' => $order->total_price, // Alias
                 'status' => $order->status,
+                'shipping_address' => $order->shipping_address ?? null,
+                'phone' => $order->phone ?? null,
+                'notes' => $order->notes ?? null,
+                'payment_method' => $order->payment_method ?? 'transfer',
                 'payment_proof' => $order->payment_proof ? url('storage/' . str_replace('storage/', '', $order->payment_proof)) : null,
                 'created_at' => $order->created_at,
                 'updated_at' => $order->updated_at,
@@ -64,6 +70,7 @@ class OrderController extends Controller
                         'product_name' => $product->name ?? 'Unknown Product',
                         'name' => $product->name ?? 'Unknown Product',
                         'quantity' => $item->qty,
+                        'qty' => $item->qty,
                         'price' => $item->price,
                         'image_url' => $finalImageUrl, // Kirim URL yang sudah diproses
                         'image' => $finalImageUrl,     // Kirim sebagai 'image' juga untuk jaga-jaga
@@ -79,10 +86,18 @@ class OrderController extends Controller
     }
 
     /**
-     * Checkout - membuat order baru dari cart
+     * Checkout - membuat order baru dari cart dengan info pengiriman
      */
     public function checkout(Request $request)
     {
+        // Validasi input
+        $validated = $request->validate([
+            'shipping_address' => 'required|string|max:500',
+            'phone' => 'required|string|max:20',
+            'notes' => 'nullable|string|max:500',
+            'payment_method' => 'nullable|string|in:transfer,cod',
+        ]);
+
         $user = $request->user();
         $cart = $user->cart()->with('items.product')->first();
 
@@ -97,10 +112,17 @@ class OrderController extends Controller
                 $item->product->price * $item->qty
             );
 
+            // Generate invoice number
+            $invoiceNumber = 'INV-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));
+
             $order = Order::create([
                 'user_id' => $user->id,
-                'invoice_number' => 'INV-' . time(),
+                'invoice_number' => $invoiceNumber,
                 'total_price' => $total,
+                'shipping_address' => $validated['shipping_address'],
+                'phone' => $validated['phone'],
+                'notes' => $validated['notes'] ?? null,
+                'payment_method' => $validated['payment_method'] ?? 'transfer',
                 'status' => 'pending_payment'
             ]);
 
@@ -118,14 +140,24 @@ class OrderController extends Controller
 
             DB::commit();
 
+            // Load relationships untuk response
+            $order->load(['items.product', 'user']);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Checkout berhasil',
-                'data' => $order->load('items.product')
+                'order' => [
+                    'id' => $order->id,
+                    'order_number' => $order->invoice_number,
+                    'total' => $order->total_price,
+                    'status' => $order->status,
+                ],
+                'data' => $order
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Checkout error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Checkout gagal: ' . $e->getMessage()
@@ -134,38 +166,63 @@ class OrderController extends Controller
     }
 
     /**
-     * Upload bukti pembayaran
+     * Upload bukti pembayaran dan kirim email ke admin
      */
     public function uploadPaymentProof(Request $request, Order $order)
     {
         $request->validate([
-            'payment_proof' => 'required|image|max:2048',
+            'payment_proof' => 'required|image|mimes:jpeg,jpg,png|max:5120', // max 5MB
         ]);
 
         if ($request->user()->id !== $order->user_id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        if ($order->payment_proof) {
-            Storage::disk('public')->delete($order->payment_proof);
+        try {
+            // Hapus file lama jika ada
+            if ($order->payment_proof) {
+                Storage::disk('public')->delete($order->payment_proof);
+            }
+
+            // Simpan file baru
+            $path = $request->file('payment_proof')->store('payment_proofs', 'public');
+
+            // Update order
+            $order->update([
+                'payment_proof' => $path,
+                'status' => 'waiting_confirmation'
+            ]);
+
+            // Load relationships untuk email
+            $order->load(['user', 'items.product']);
+
+            // Kirim email ke admin
+            $adminEmail = env('ADMIN_EMAIL', 'sandhyprasetyo41@gmail.com');
+
+            try {
+                Mail::to($adminEmail)->send(new OrderNotificationMail($order, $path));
+                \Log::info('✅ Email berhasil dikirim ke admin: ' . $adminEmail . ' untuk order: ' . $order->invoice_number);
+            } catch (\Exception $mailError) {
+                // Log error tapi jangan gagalkan request
+                \Log::error('❌ Gagal mengirim email: ' . $mailError->getMessage());
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Bukti pembayaran berhasil diupload dan notifikasi dikirim ke admin',
+                'data' => [
+                    'payment_proof_url' => asset('storage/' . $path),
+                    'status' => $order->status
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Upload payment proof error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengupload bukti pembayaran: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Simpan file
-        $path = $request->file('payment_proof')->store('payment_proofs', 'public');
-
-        $order->update([
-            'payment_proof' => $path,
-            'status' => 'waiting_confirmation'
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Payment proof uploaded successfully',
-            'data' => [
-                'payment_proof_url' => asset('storage/' . $path),
-                'status' => $order->status
-            ]
-        ]);
     }
 
     /**

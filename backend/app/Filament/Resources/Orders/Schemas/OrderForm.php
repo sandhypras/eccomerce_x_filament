@@ -46,6 +46,17 @@ class OrderForm
                 ->openable()
                 ->downloadable()
                 ->disabled(fn ($record) => $record?->status === 'paid'),
+
+            TextInput::make('phone')
+                ->label('No. Telepon')
+                ->tel()
+                ->required(),
+            TextInput::make('shipping_address')
+                ->label('Alamat Pengiriman')
+                ->required(),
+            TextInput::make('notes')
+                ->label('Catatan')
+                ->nullable(),
         ]);
     }
 }

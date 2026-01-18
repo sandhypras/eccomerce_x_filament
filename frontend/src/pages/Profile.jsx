@@ -742,7 +742,7 @@ const Profile = () => {
 
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 <button
-                  onClick={() => navigate("/orders")}
+                  onClick={() => navigate("/MyOrders")}
                   style={{
                     width: "100%",
                     padding: "12px",

@@ -41,6 +41,21 @@ class OrdersTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('user.name')
+                    ->label('Customer Name')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                textColumn::make('user.email')
+                    ->label('Customer Email')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                textColumn::make('phone')
+                    ->label('No. Telepon')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                textColumn::make('shipping_address')
+                    ->label('Alamat Pengiriman')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                textColumn::make('notes')
+                    ->label('Catatan')
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

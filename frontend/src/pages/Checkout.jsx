@@ -123,42 +123,50 @@ const Checkout = () => {
     try {
       setSubmitting(true);
 
-      // Step 1: Create order
+      // Step 1: Create order dengan data pengiriman
       const orderData = {
         shipping_address: shippingAddress,
         phone: phone,
         notes: notes || "",
         payment_method: paymentMethod,
-        total: calculateTotal(),
       };
+
+      console.log("📤 Sending order data:", orderData);
 
       const orderResponse = await axiosInstance.post("/checkout", orderData);
 
-      console.log("Order response:", orderResponse.data);
+      console.log("✅ Order response:", orderResponse.data);
 
-      const orderId = orderResponse.data.order?.id || orderResponse.data.id;
+      // Ambil order ID dari berbagai format response
+      const orderId = orderResponse.data.order?.id || orderResponse.data.data?.id || orderResponse.data.id;
 
       if (!orderId) {
         throw new Error("Order ID tidak ditemukan dalam response");
       }
 
-      // Step 2: Upload payment proof if exists
+      console.log("🆔 Order ID:", orderId);
+
+      // Step 2: Upload payment proof
       if (paymentProof) {
         const formData = new FormData();
         formData.append("payment_proof", paymentProof);
 
-        await axiosInstance.post(`/orders/${orderId}/upload-payment-proof`, formData, {
+        console.log("📤 Uploading payment proof for order:", orderId);
+
+        const uploadResponse = await axiosInstance.post(`/orders/${orderId}/upload-payment-proof`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
+
+        console.log("✅ Upload response:", uploadResponse.data);
       }
 
       // Success
-      alert("Pesanan berhasil dibuat! Kami akan memproses pesanan Anda segera.");
+      alert("✅ Pesanan berhasil dibuat! Email notifikasi telah dikirim ke admin.");
       navigate("/order-success", { state: { orderId } });
     } catch (error) {
-      console.error("Checkout error:", error);
+      console.error("❌ Checkout error:", error);
       const errorMessage = error.response?.data?.message || "Gagal melakukan checkout";
       alert(errorMessage);
     } finally {
@@ -170,69 +178,23 @@ const Checkout = () => {
 
   if (loading) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#f5f5f5",
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <div
-            style={{
-              border: "4px solid #f3f3f3",
-              borderTop: "4px solid #2c3e50",
-              borderRadius: "50%",
-              width: "50px",
-              height: "50px",
-              margin: "0 auto 20px",
-              animation: "spin 1s linear infinite",
-            }}
-          />
-          <p>Memuat data keranjang...</p>
-          <style>{`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}</style>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mb-4"></div>
+          <p className="text-gray-600 font-medium">Memuat data keranjang...</p>
         </div>
       </div>
     );
   }
 
-  console.log("🛒 Current cart items:", cartItems);
-  console.log("📊 Total items:", cartItems.length);
-
   if (cartItems.length === 0) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#f5f5f5",
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <ShoppingBag size={64} color="#bdc3c7" style={{ marginBottom: "20px" }} />
-          <h2 style={{ fontSize: "24px", marginBottom: "10px" }}>Keranjang Kosong</h2>
-          <p style={{ color: "#7f8c8d", marginBottom: "20px" }}>Silakan tambahkan produk ke keranjang terlebih dahulu</p>
-          <button
-            onClick={() => navigate("/products")}
-            style={{
-              padding: "12px 30px",
-              backgroundColor: "#2c3e50",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              fontSize: "16px",
-            }}
-          >
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center bg-white p-12 rounded-2xl shadow-lg">
+          <ShoppingBag size={64} className="mx-auto text-gray-300 mb-4" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Keranjang Kosong</h2>
+          <p className="text-gray-600 mb-6">Silakan tambahkan produk ke keranjang terlebih dahulu</p>
+          <button onClick={() => navigate("/products")} className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:shadow-xl transition-all transform hover:scale-105">
             Belanja Sekarang
           </button>
         </div>
@@ -241,322 +203,176 @@ const Checkout = () => {
   }
 
   return (
-    <div style={{ backgroundColor: "#f5f5f5", minHeight: "100vh", paddingBottom: "40px" }}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 pb-12">
       {/* Header */}
-      <div
-        style={{
-          backgroundColor: "#2c3e50",
-          color: "white",
-          padding: "40px 20px",
-          marginBottom: "30px",
-        }}
-      >
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <h1 style={{ fontSize: "32px", fontWeight: "bold", marginBottom: "10px" }}>Checkout</h1>
-          <p style={{ fontSize: "16px", color: "#bdc3c7" }}>Lengkapi data pengiriman dan lakukan pembayaran</p>
+      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-12 mb-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <h1 className="text-4xl font-bold mb-2">Checkout</h1>
+          <p className="text-blue-100">Lengkapi data pengiriman dan lakukan pembayaran</p>
         </div>
       </div>
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: window.innerWidth > 768 ? "1fr 400px" : "1fr",
-            gap: "30px",
-          }}
-        >
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Form */}
-          <div>
-            <form onSubmit={handleSubmit}>
+          <div className="lg:col-span-2">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {/* Shipping Information */}
-              <div
-                style={{
-                  backgroundColor: "white",
-                  padding: "30px",
-                  borderRadius: "12px",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                  marginBottom: "20px",
-                }}
-              >
-                <h2
-                  style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    marginBottom: "20px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                  }}
-                >
-                  <MapPin size={24} color="#2c3e50" />
+              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                  <MapPin className="text-blue-600" size={28} />
                   Informasi Pengiriman
                 </h2>
 
-                <div style={{ marginBottom: "20px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      fontWeight: "600",
-                      marginBottom: "8px",
-                      fontSize: "14px",
-                    }}
-                  >
-                    Nama Penerima
-                  </label>
-                  <input
-                    type="text"
-                    value={user?.name || ""}
-                    disabled
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      border: "2px solid #e0e0e0",
-                      borderRadius: "8px",
-                      fontSize: "14px",
-                      backgroundColor: "#f5f5f5",
-                    }}
-                  />
-                </div>
+                <div className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Nama Penerima</label>
+                    <input type="text" value={user?.name || ""} disabled className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-gray-50 text-gray-600 font-medium" />
+                  </div>
 
-                <div style={{ marginBottom: "20px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      fontWeight: "600",
-                      marginBottom: "8px",
-                      fontSize: "14px",
-                    }}
-                  >
-                    Nomor Telepon <span style={{ color: "#e74c3c" }}>*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder="Contoh: 08123456789"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      border: `2px solid ${errors.phone ? "#e74c3c" : "#e0e0e0"}`,
-                      borderRadius: "8px",
-                      fontSize: "14px",
-                    }}
-                  />
-                  {errors.phone && <p style={{ color: "#e74c3c", fontSize: "12px", marginTop: "5px" }}>{errors.phone}</p>}
-                </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Nomor Telepon <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      placeholder="Contoh: 08123456789"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all ${errors.phone ? "border-red-500 focus:ring-red-200" : "border-gray-200 focus:ring-blue-200 focus:border-blue-400"}`}
+                    />
+                    {errors.phone && (
+                      <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                        <AlertCircle size={14} />
+                        {errors.phone}
+                      </p>
+                    )}
+                  </div>
 
-                <div style={{ marginBottom: "20px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      fontWeight: "600",
-                      marginBottom: "8px",
-                      fontSize: "14px",
-                    }}
-                  >
-                    Alamat Lengkap <span style={{ color: "#e74c3c" }}>*</span>
-                  </label>
-                  <textarea
-                    placeholder="Masukkan alamat lengkap termasuk kode pos"
-                    value={shippingAddress}
-                    onChange={(e) => setShippingAddress(e.target.value)}
-                    rows={4}
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      border: `2px solid ${errors.shippingAddress ? "#e74c3c" : "#e0e0e0"}`,
-                      borderRadius: "8px",
-                      fontSize: "14px",
-                      fontFamily: "inherit",
-                      resize: "vertical",
-                    }}
-                  />
-                  {errors.shippingAddress && <p style={{ color: "#e74c3c", fontSize: "12px", marginTop: "5px" }}>{errors.shippingAddress}</p>}
-                </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Alamat Lengkap <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      placeholder="Masukkan alamat lengkap termasuk kode pos"
+                      value={shippingAddress}
+                      onChange={(e) => setShippingAddress(e.target.value)}
+                      rows={4}
+                      className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all resize-y ${
+                        errors.shippingAddress ? "border-red-500 focus:ring-red-200" : "border-gray-200 focus:ring-blue-200 focus:border-blue-400"
+                      }`}
+                    />
+                    {errors.shippingAddress && (
+                      <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                        <AlertCircle size={14} />
+                        {errors.shippingAddress}
+                      </p>
+                    )}
+                  </div>
 
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      fontWeight: "600",
-                      marginBottom: "8px",
-                      fontSize: "14px",
-                    }}
-                  >
-                    Catatan (Opsional)
-                  </label>
-                  <textarea
-                    placeholder="Catatan untuk penjual..."
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    rows={3}
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      border: "2px solid #e0e0e0",
-                      borderRadius: "8px",
-                      fontSize: "14px",
-                      fontFamily: "inherit",
-                      resize: "vertical",
-                    }}
-                  />
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Catatan (Opsional)</label>
+                    <textarea
+                      placeholder="Catatan untuk penjual..."
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      rows={3}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all resize-y"
+                    />
+                  </div>
                 </div>
               </div>
 
               {/* Payment Information */}
-              <div
-                style={{
-                  backgroundColor: "white",
-                  padding: "30px",
-                  borderRadius: "12px",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                  marginBottom: "20px",
-                }}
-              >
-                <h2
-                  style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    marginBottom: "20px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                  }}
-                >
-                  <CreditCard size={24} color="#2c3e50" />
+              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                  <CreditCard className="text-purple-600" size={28} />
                   Informasi Pembayaran
                 </h2>
 
-                <div style={{ marginBottom: "20px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      fontWeight: "600",
-                      marginBottom: "12px",
-                      fontSize: "14px",
-                    }}
-                  >
-                    Metode Pembayaran
-                  </label>
+                <div className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">Metode Pembayaran</label>
 
-                  <div
-                    style={{
-                      padding: "20px",
-                      border: "2px solid #3498db",
-                      borderRadius: "8px",
-                      backgroundColor: "#e3f2fd",
-                    }}
-                  >
+                    <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl p-6">
+                      <div className="flex items-center mb-4">
+                        <input type="radio" id="transfer" name="paymentMethod" value="transfer" checked={paymentMethod === "transfer"} onChange={(e) => setPaymentMethod(e.target.value)} className="w-4 h-4 text-blue-600 mr-3" />
+                        <label htmlFor="transfer" className="text-lg font-bold text-gray-800">
+                          Transfer Bank
+                        </label>
+                      </div>
+
+                      <div className="bg-white rounded-lg p-5 space-y-2 text-sm">
+                        <p className="font-bold text-gray-800 mb-3">Rekening Tujuan:</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          <span className="text-gray-600">Bank:</span>
+                          <span className="font-semibold">BCA</span>
+
+                          <span className="text-gray-600">No. Rekening:</span>
+                          <span className="font-semibold">1234567890</span>
+
+                          <span className="text-gray-600">Atas Nama:</span>
+                          <span className="font-semibold">TokoKu Electronics</span>
+                        </div>
+                        <p className="text-red-600 text-xs mt-3 font-medium">* Silakan upload bukti transfer setelah melakukan pembayaran</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Upload Payment Proof */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      Upload Bukti Pembayaran <span className="text-red-500">*</span>
+                    </label>
+
                     <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        marginBottom: "15px",
+                      className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${errors.paymentProof ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50 hover:border-blue-400 hover:bg-blue-50"}`}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.add("border-blue-500", "bg-blue-100");
+                      }}
+                      onDragLeave={(e) => {
+                        e.currentTarget.classList.remove("border-blue-500", "bg-blue-100");
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove("border-blue-500", "bg-blue-100");
+                        const file = e.dataTransfer.files[0];
+                        if (file) {
+                          handleFileChange({ target: { files: [file] } });
+                        }
                       }}
                     >
-                      <input type="radio" id="transfer" name="paymentMethod" value="transfer" checked={paymentMethod === "transfer"} onChange={(e) => setPaymentMethod(e.target.value)} style={{ marginRight: "10px" }} />
-                      <label htmlFor="transfer" style={{ fontSize: "16px", fontWeight: "600" }}>
-                        Transfer Bank
+                      <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" id="payment-proof-input" />
+                      <label htmlFor="payment-proof-input" className="cursor-pointer">
+                        {paymentProofPreview ? (
+                          <div className="space-y-3">
+                            <img src={paymentProofPreview} alt="Payment proof preview" className="max-w-full max-h-48 mx-auto rounded-lg shadow-md" />
+                            <p className="text-green-600 font-semibold flex items-center justify-center gap-2">
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                              File berhasil dipilih
+                            </p>
+                            <p className="text-gray-500 text-xs">Klik untuk mengganti file</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            <Upload size={48} className="mx-auto text-gray-400" />
+                            <p className="text-gray-600 font-medium">Klik atau drag & drop file di sini</p>
+                            <p className="text-gray-400 text-xs">Format: JPG, PNG (Max 5MB)</p>
+                          </div>
+                        )}
                       </label>
                     </div>
 
-                    <div
-                      style={{
-                        backgroundColor: "white",
-                        padding: "15px",
-                        borderRadius: "6px",
-                        fontSize: "14px",
-                        lineHeight: "1.6",
-                      }}
-                    >
-                      <p style={{ fontWeight: "600", marginBottom: "10px" }}>Rekening Tujuan:</p>
-                      <p>Bank BCA</p>
-                      <p>
-                        No. Rek: <strong>1234567890</strong>
+                    {errors.paymentProof && (
+                      <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
+                        <AlertCircle size={14} />
+                        {errors.paymentProof}
                       </p>
-                      <p>
-                        A/N: <strong>TokoKu Electronics</strong>
-                      </p>
-                      <p style={{ marginTop: "10px", color: "#e74c3c", fontSize: "13px" }}>* Silakan upload bukti transfer setelah melakukan pembayaran</p>
-                    </div>
+                    )}
                   </div>
-                </div>
-
-                {/* Upload Payment Proof */}
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      fontWeight: "600",
-                      marginBottom: "12px",
-                      fontSize: "14px",
-                    }}
-                  >
-                    Upload Bukti Pembayaran <span style={{ color: "#e74c3c" }}>*</span>
-                  </label>
-
-                  <div
-                    style={{
-                      border: `2px dashed ${errors.paymentProof ? "#e74c3c" : "#bdc3c7"}`,
-                      borderRadius: "8px",
-                      padding: "30px",
-                      textAlign: "center",
-                      backgroundColor: "#fafafa",
-                      cursor: "pointer",
-                      transition: "all 0.3s",
-                    }}
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      e.currentTarget.style.borderColor = "#3498db";
-                      e.currentTarget.style.backgroundColor = "#e3f2fd";
-                    }}
-                    onDragLeave={(e) => {
-                      e.currentTarget.style.borderColor = "#bdc3c7";
-                      e.currentTarget.style.backgroundColor = "#fafafa";
-                    }}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      e.currentTarget.style.borderColor = "#bdc3c7";
-                      e.currentTarget.style.backgroundColor = "#fafafa";
-                      const file = e.dataTransfer.files[0];
-                      if (file) {
-                        handleFileChange({ target: { files: [file] } });
-                      }
-                    }}
-                  >
-                    <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: "none" }} id="payment-proof-input" />
-                    <label htmlFor="payment-proof-input" style={{ cursor: "pointer" }}>
-                      {paymentProofPreview ? (
-                        <div>
-                          <img
-                            src={paymentProofPreview}
-                            alt="Payment proof preview"
-                            style={{
-                              maxWidth: "100%",
-                              maxHeight: "200px",
-                              marginBottom: "10px",
-                              borderRadius: "4px",
-                            }}
-                          />
-                          <p style={{ color: "#27ae60", fontSize: "14px", fontWeight: "600" }}>✓ File berhasil dipilih</p>
-                          <p style={{ color: "#7f8c8d", fontSize: "12px", marginTop: "5px" }}>Klik untuk mengganti file</p>
-                        </div>
-                      ) : (
-                        <div>
-                          <Upload size={48} color="#bdc3c7" style={{ marginBottom: "10px" }} />
-                          <p style={{ fontSize: "14px", color: "#7f8c8d" }}>Klik atau drag & drop file di sini</p>
-                          <p style={{ fontSize: "12px", color: "#95a5a6", marginTop: "5px" }}>Format: JPG, PNG (Max 5MB)</p>
-                        </div>
-                      )}
-                    </label>
-                  </div>
-
-                  {errors.paymentProof && (
-                    <p style={{ color: "#e74c3c", fontSize: "12px", marginTop: "8px", display: "flex", alignItems: "center", gap: "5px" }}>
-                      <AlertCircle size={14} />
-                      {errors.paymentProof}
-                    </p>
-                  )}
                 </div>
               </div>
 
@@ -564,56 +380,29 @@ const Checkout = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                style={{
-                  width: "100%",
-                  padding: "16px",
-                  backgroundColor: submitting ? "#95a5a6" : "#27ae60",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  fontSize: "18px",
-                  fontWeight: "bold",
-                  cursor: submitting ? "not-allowed" : "pointer",
-                  transition: "background-color 0.3s",
-                }}
-                onMouseEnter={(e) => {
-                  if (!submitting) e.currentTarget.style.backgroundColor = "#229954";
-                }}
-                onMouseLeave={(e) => {
-                  if (!submitting) e.currentTarget.style.backgroundColor = "#27ae60";
-                }}
+                className={`w-full py-4 rounded-xl font-bold text-lg text-white transition-all transform ${
+                  submitting ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:shadow-2xl hover:scale-105"
+                }`}
               >
-                {submitting ? "Memproses..." : "Proses Pesanan"}
+                {submitting ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Memproses...
+                  </span>
+                ) : (
+                  "Proses Pesanan"
+                )}
               </button>
             </form>
           </div>
 
           {/* Right Column - Order Summary */}
-          <div>
-            <div
-              style={{
-                backgroundColor: "white",
-                padding: "30px",
-                borderRadius: "12px",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                position: "sticky",
-                top: "20px",
-              }}
-            >
-              <h2
-                style={{
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                  marginBottom: "20px",
-                  paddingBottom: "15px",
-                  borderBottom: "2px solid #f0f0f0",
-                }}
-              >
-                Ringkasan Pesanan
-              </h2>
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 sticky top-24">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 pb-4 border-b-2 border-gray-100">Ringkasan Pesanan</h2>
 
               {/* Cart Items */}
-              <div style={{ marginBottom: "20px" }}>
+              <div className="space-y-4 mb-6 max-h-64 overflow-y-auto">
                 {cartItems.map((item) => {
                   const product = item.product || {};
                   const price = parseFloat(item.price || product.price || 0);
@@ -621,66 +410,18 @@ const Checkout = () => {
                   const itemTotal = price * qty;
 
                   return (
-                    <div
-                      key={item.id}
-                      style={{
-                        display: "flex",
-                        gap: "15px",
-                        marginBottom: "15px",
-                        paddingBottom: "15px",
-                        borderBottom: "1px solid #f0f0f0",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "60px",
-                          height: "60px",
-                          backgroundColor: "#f0f0f0",
-                          borderRadius: "6px",
-                          overflow: "hidden",
-                          flexShrink: 0,
-                        }}
-                      >
+                    <div key={item.id} className="flex gap-4 pb-4 border-b border-gray-100 last:border-0">
+                      <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                         {product.image_url ? (
-                          <img
-                            src={product.image_url}
-                            alt={product.name}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                            }}
-                          />
+                          <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
                         ) : (
-                          <div
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "20px",
-                              fontWeight: "bold",
-                              color: "#bdc3c7",
-                            }}
-                          >
-                            {product.name?.charAt(0) || "?"}
-                          </div>
+                          <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-gray-300">{product.name?.charAt(0) || "?"}</div>
                         )}
                       </div>
-                      <div style={{ flex: 1 }}>
-                        <h4
-                          style={{
-                            fontSize: "14px",
-                            fontWeight: "600",
-                            marginBottom: "5px",
-                            color: "#2c3e50",
-                          }}
-                        >
-                          {product.name || "Produk"}
-                        </h4>
-                        <p style={{ fontSize: "12px", color: "#7f8c8d", marginBottom: "5px" }}>Qty: {qty}</p>
-                        <p style={{ fontSize: "14px", fontWeight: "bold", color: "#27ae60" }}>Rp {itemTotal.toLocaleString("id-ID")}</p>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-800 text-sm mb-1 line-clamp-2">{product.name || "Produk"}</h4>
+                        <p className="text-xs text-gray-500 mb-1">Qty: {qty}</p>
+                        <p className="font-bold text-blue-600">Rp {itemTotal.toLocaleString("id-ID")}</p>
                       </div>
                     </div>
                   );
@@ -688,51 +429,20 @@ const Checkout = () => {
               </div>
 
               {/* Total */}
-              <div
-                style={{
-                  paddingTop: "20px",
-                  borderTop: "2px solid #f0f0f0",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "15px",
-                    fontSize: "14px",
-                    color: "#7f8c8d",
-                  }}
-                >
+              <div className="space-y-3 pt-6 border-t-2 border-gray-100">
+                <div className="flex justify-between text-gray-600">
                   <span>Subtotal ({cartItems.length} item)</span>
                   <span>Rp {total.toLocaleString("id-ID")}</span>
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "20px",
-                    fontSize: "14px",
-                    color: "#7f8c8d",
-                  }}
-                >
+                <div className="flex justify-between text-gray-600">
                   <span>Ongkos Kirim</span>
-                  <span>Rp 0</span>
+                  <span className="text-green-600 font-semibold">GRATIS</span>
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    paddingTop: "20px",
-                    borderTop: "2px solid #f0f0f0",
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    color: "#2c3e50",
-                  }}
-                >
+                <div className="flex justify-between text-2xl font-bold text-gray-800 pt-4 border-t-2 border-gray-100">
                   <span>Total</span>
-                  <span style={{ color: "#27ae60" }}>Rp {total.toLocaleString("id-ID")}</span>
+                  <span className="text-blue-600">Rp {total.toLocaleString("id-ID")}</span>
                 </div>
               </div>
             </div>
