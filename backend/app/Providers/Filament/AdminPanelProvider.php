@@ -2,23 +2,9 @@
 
 namespace App\Providers\Filament;
 
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\AuthenticateSession;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
-
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -30,32 +16,45 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Orange, // Ubah ke Orange untuk TokoKu
+                // Atau custom:
+                // 'primary' => [
+                //     50 => '255, 237, 213',
+                //     100 => '254, 215, 170',
+                //     200 => '253, 186, 116',
+                //     300 => '251, 146, 60',
+                //     400 => '251, 146, 60',
+                //     500 => '249, 115, 22', // Main color
+                //     600 => '234, 88, 12',
+                //     700 => '194, 65, 12',
+                //     800 => '154, 52, 18',
+                //     900 => '124, 45, 18',
+                //     950 => '67, 20, 7',
+                // ],
             ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
+            ->font('Inter') // Ubah font
+            ->brandName('TokoKu Admin') // Nama brand
+            ->brandLogo(asset('images/ChatGPT Image Jan 19, 2026, 12_13_36 AM1.png')) // Logo custom
+            ->brandLogoHeight('4rem')
+            ->favicon(asset('images/favicon.png'))
+            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Dashboard::class,
+                \Filament\Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
-            ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
-            ])
+            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->widgets([])
             ->middleware([
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
-                DisableBladeIconComponents::class,
-                DispatchServingFilamentEvent::class,
+                \Illuminate\Cookie\Middleware\EncryptCookies::class,
+                \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+                \Illuminate\Session\Middleware\StartSession::class,
+                \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+                \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+                \Illuminate\Routing\Middleware\SubstituteBindings::class,
+                \Illuminate\Session\Middleware\AuthenticateSession::class,
             ])
             ->authMiddleware([
-                Authenticate::class,
+                \Illuminate\Auth\Middleware\Authenticate::class,
             ]);
     }
-
 }

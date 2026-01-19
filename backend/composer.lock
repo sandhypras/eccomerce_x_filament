@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "219957ff12f2d54934f7e1cdb356922d",
+    "content-hash": "df739ee17d3180c526391055b5763e3a",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -987,6 +987,53 @@
                 }
             ],
             "time": "2025-03-06T22:45:56+00:00"
+        },
+        {
+            "name": "emuniq/filament-collapsible-subnav",
+            "version": "v1.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Emuniq/filament-collapsible-subnav.git",
+                "reference": "c36ce7298f190bf30dc631f8f85ff548970dc727"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Emuniq/filament-collapsible-subnav/zipball/c36ce7298f190bf30dc631f8f85ff548970dc727",
+                "reference": "c36ce7298f190bf30dc631f8f85ff548970dc727",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0|^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Emuniq\\FilamentCollapsibleSubnav\\CollapsibleSubnavServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Emuniq\\FilamentCollapsibleSubnav\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A Filament v3 & v4 plugin for collapsible sub-navigation sidebar.",
+            "keywords": [
+                "filament",
+                "laravel",
+                "sidebar",
+                "subnavigation"
+            ],
+            "support": {
+                "issues": "https://github.com/Emuniq/filament-collapsible-subnav/issues",
+                "source": "https://github.com/Emuniq/filament-collapsible-subnav/tree/v1.5.0"
+            },
+            "time": "2025-12-12T00:09:40+00:00"
         },
         {
             "name": "filament/actions",
